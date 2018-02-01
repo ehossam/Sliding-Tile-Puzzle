@@ -6,4 +6,5 @@
     <string name="pause">Pause</string>
     <string name="pause_menu">Pause Menu</string>
     <string name="finish">Finished</string>
+    <string name="number_mode">Number mode</string>
 </resources>

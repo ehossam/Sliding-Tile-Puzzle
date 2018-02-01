@@ -1,10 +1,18 @@
 package team6.slidingtiles;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Abstract super class for MathBoard and NumberBoard
  */
 
-abstract class Board {
+abstract class Board implements Parcelable{
+    final static String ARG_BOARD = "board";
+    final static String ARG_BLANKX = "blankX";
+    final static String ARG_BLANKY = "blanky";
+
     final static String BLANK = " ";
     final static int TILE_SIDE = 5;
     final static int TILE_COUNT = (int)(Math.pow(TILE_SIDE, 2));
@@ -91,4 +99,15 @@ abstract class Board {
         return copy;
     }
 
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_BOARD, board);
+        bundle.putInt(ARG_BLANKX, blankX);
+        bundle.putInt(ARG_BLANKY, blankY);
+    }
 }

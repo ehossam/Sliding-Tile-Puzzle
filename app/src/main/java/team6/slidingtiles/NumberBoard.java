@@ -1,5 +1,9 @@
 package team6.slidingtiles;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * This class represents the number-based tile board.
  */
@@ -88,6 +92,23 @@ public class NumberBoard extends Board {
             boardString.append("\n+----+----+----+----+----+");
         }
         return boardString.append("\n").toString();
+    }
+
+    public static final Parcelable.Creator<NumberBoard> CREATOR
+            = new Parcelable.Creator<NumberBoard>() {
+        public NumberBoard createFromParcel(Parcel in) {
+            return new NumberBoard();
+        }
+        public NumberBoard[] newArray(int size) {
+            return new NumberBoard[size];
+        }
+    };
+
+    private NumberBoard(Parcel in) {
+        Bundle bundle = in.readBundle();
+        board = (String[][]) bundle.getSerializable(ARG_BOARD);
+        blankX = bundle.getInt(ARG_BLANKX);
+        blankY = bundle.getInt(ARG_BLANKY);
     }
 
 }
