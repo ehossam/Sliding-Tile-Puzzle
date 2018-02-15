@@ -3,6 +3,8 @@ package team6.slidingtiles;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 
 public class NumberMode extends GameMode implements BoardFragment.SelectionHandler {
@@ -10,6 +12,7 @@ public class NumberMode extends GameMode implements BoardFragment.SelectionHandl
     private static final String ARGS_BOARDLAYOUT    = "boardLayout";
     private static final String ARGS_BLANKTILE      = "blankTile";
     ArrayList<String> boardLayout;
+    int difficulty;
 
     /**
      * onCreate for numbermode, is called when the activity is created
@@ -17,6 +20,7 @@ public class NumberMode extends GameMode implements BoardFragment.SelectionHandl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         gameBoard = null;
+        difficulty = 0;
         super.onCreate(savedInstanceState);
     }
 
@@ -44,6 +48,11 @@ public class NumberMode extends GameMode implements BoardFragment.SelectionHandl
         blankTile   = savedInstanceState.getInt(ARGS_BLANKTILE);
     }
 
+    void newGame() {
+        super.newGame();
+        newGameDialog().show();
+    }
+
     /**
      * createGame is called when a new game needs to be created,
      * and creates a board of the desired type.
@@ -52,6 +61,35 @@ public class NumberMode extends GameMode implements BoardFragment.SelectionHandl
         gameBoard = new NumberBoard(true, difficulty);
         SetBoard(gameBoard);
         super.createGame();
+    }
+
+    /**
+     * creates a newGameDialog to be displayed, lets user select difficulty
+     * @return the Builder which the actionDialog is contained in
+     */
+    AlertDialog.Builder newGameDialog() {
+        CharSequence options[]      = new CharSequence[]{"Easy", "Normal", "Hard"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Difficulty");
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i){
+                    case 0:
+                        difficulty = 8;
+                        break;
+                    case 1:
+                        difficulty = 16;
+                        break;
+                    case 2:
+                        difficulty = 32;
+                        break;
+                }
+                createGame();
+            }
+        });
+        builder.setCancelable(false);
+        return builder;
     }
 
     /**

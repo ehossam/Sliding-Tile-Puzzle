@@ -30,8 +30,8 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view) {
         if(view == buttonSingle){
             //TODO : redirect to single player mode
-//            Intent intent = new Intent(PlayerMode.this,Singlemode.class);
-//            startActivity(intent);
+            Intent intent = new Intent(PlayerMode.this,MathMode.class);
+            startActivity(intent);
         }
         if(view == buttonBasic){
             //TODO : redirect to two player basic mode
