@@ -176,10 +176,6 @@ public class BoardFragment extends Fragment {
     }
 
     private void onSwipeLeft() {
-        i1=i1-1;
-        j1=j1-1;
-        i2=i2-1;
-        j2=j2-1;
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<=sizeperx*(i)))
                 j1=i;
@@ -199,6 +195,10 @@ public class BoardFragment extends Fragment {
 
         i2=i1;
 
+        i1=i1-1;
+        j1=j1-1;
+        i2=i2-1;
+        j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
         selectionHandler.handleSWipe(starti,endi);
@@ -206,10 +206,6 @@ public class BoardFragment extends Fragment {
     }
 
     private void onSwipeRight() {
-        i1=i1-1;
-        j1=j1-1;
-        i2=i2-1;
-        j2=j2-1;
 
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<=sizeperx*(i)))
@@ -230,6 +226,10 @@ public class BoardFragment extends Fragment {
 
         i2=i1;
 
+        i1=i1-1;
+        j1=j1-1;
+        i2=i2-1;
+        j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
         selectionHandler.handleSWipe(starti,endi);
@@ -238,10 +238,6 @@ public class BoardFragment extends Fragment {
     }
 
     private void onSwipeTop() {
-        i1=i1-1;
-        j1=j1-1;
-        i2=i2-1;
-        j2=j2-1;
 
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<=sizeperx*(i)))
@@ -260,6 +256,10 @@ public class BoardFragment extends Fragment {
             if((Y2>=sizepery*(i-1))&&(Y2<=sizepery*(i)))
                 i2=i;
         }
+        i1=i1-1;
+        j1=j1-1;
+        i2=i2-1;
+        j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
         selectionHandler.handleSWipe(starti,endi);
@@ -268,10 +268,7 @@ public class BoardFragment extends Fragment {
     }
 
     private void onSwipeBottom() {
-        i1=i1-1;
-        j1=j1-1;
-        i2=i2-1;
-        j2=j2-1;
+
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<=sizeperx*(i)))
                 j1=i;
@@ -290,6 +287,10 @@ public class BoardFragment extends Fragment {
                 i2=i;
         }
 
+        i1=i1-1;
+        j1=j1-1;
+        i2=i2-1;
+        j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
         selectionHandler.handleSWipe(starti,endi);
