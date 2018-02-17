@@ -70,6 +70,7 @@ public class SigninPage extends AppCompatActivity implements View.OnClickListene
                             Toast.makeText(SigninPage.this,"Logged in",Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(SigninPage.this,PlayerMode.class);
                             startActivity(intent);
+
                         }else{
                             //display some message here
                             Toast.makeText(SigninPage.this,"Login Error",Toast.LENGTH_LONG).show();
