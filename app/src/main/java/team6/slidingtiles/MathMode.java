@@ -62,15 +62,18 @@ public class MathMode extends GameMode  {
 
     @Override
     public boolean handleSWipe(int start, int end) {
-        int x = start % 5;
-        int y = start / 5;
+        int startX = start % 5;
+        int startY = start / 5;
 
-        Toast.makeText(this, "blah" + start, Toast.LENGTH_SHORT).show();
-        if (x == 0 && y != end / 5)
-            score += ((MathBoard) gameBoard).getScore(x, y, false);
-        else if (y == 0 && x != end % 5)
-            score += ((MathBoard) gameBoard).getScore(x, y, true);
-        else return false;
+        int endX = end % 5;
+        int endY = end / 5;
+
+        Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
+        if ((startX == 0 || endX == 0) && startY == endY) {
+            score += ((MathBoard) gameBoard).getScore(startX, startY, false);
+        } else if ((startY == 0 || endY == 0) && startX == endX) {
+            score += ((MathBoard) gameBoard).getScore(startX, startY, true);
+        } else return false;
         scoreView.setText(Integer.toString(score));
         return true;
     }
