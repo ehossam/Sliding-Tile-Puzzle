@@ -1,6 +1,8 @@
 package team6.slidingtiles;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -48,15 +50,35 @@ public class MathMode extends GameMode  {
         blankTile = savedInstanceState.getInt(ARGS_BLANKTILE);
     }
 
+    AlertDialog.Builder newGameDialog() {
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+        adBuilder.setMessage("Submit Score?");
+        adBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                createGame();
+            }
+        });
+        adBuilder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                createGame();
+            }
+        });
+        return adBuilder;
+    }
+
     void newGame(){
         super.newGame();
-        createGame();
+        if(score > 0)
+            newGameDialog().show();
+        else
+            createGame();
     }
 
     void createGame(){
+        score = 0;
+        scoreView.setText(Integer.toString(score));
         gameBoard = new MathBoard(true);
         SetBoard(gameBoard);
-        score = 0;
         super.createGame();
     }
 
