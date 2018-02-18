@@ -1,6 +1,7 @@
 package team6.slidingtiles;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.widget.FrameLayout;
@@ -9,6 +10,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -21,6 +27,8 @@ public class MathMode extends GameMode  {
     private static final String ARGS_GAMEBOARD      = "gameBoard";
     private static final String ARGS_BOARDLAYOUT    = "boardLayout";
     private static final String ARGS_BLANKTILE      = "blankTile";
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
 
     int score;
     TextView scoreView;
@@ -29,9 +37,31 @@ public class MathMode extends GameMode  {
     protected void onCreate(Bundle savedInstanceState){
         gameBoard = null;
         super.onCreate(savedInstanceState);
+        firebaseAuth = FirebaseAuth.getInstance();
+        if(firebaseAuth.getCurrentUser()==null) {
+            //closing this activity
+            finish();
+            //start new activity
+            Intent intent = new Intent(MathMode.this, SigninPage.class);
+            startActivity(intent);
+        }
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
         score = 0;
         scoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         scoreView.setText(Integer.toString(score));
+    }
+
+    private void saveScore(){
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        String email = user.getEmail();
+        String[] userName = email.split("@");
+        String name = userName[0];
+
+        UserScore userScore = new UserScore(name, score);
+
+        databaseReference.child(databaseReference.push().getKey()).setValue(userScore);
     }
 
     @Override
@@ -55,6 +85,7 @@ public class MathMode extends GameMode  {
         adBuilder.setMessage("Submit Score?");
         adBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                saveScore();
                 createGame();
             }
         });
