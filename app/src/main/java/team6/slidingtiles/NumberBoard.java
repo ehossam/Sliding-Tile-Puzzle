@@ -111,4 +111,23 @@ public class NumberBoard extends Board {
         blankY = bundle.getInt(ARG_BLANKY);
     }
 
+    /**
+     * Get the board in byte array representation (for AI)
+     * @return a byte string representing the board current state
+     */
+    public byte[] getBoardAsBytes() {
+        byte[] bytes = new byte[Board.TILE_COUNT];
+        for (int i = 0; i < Board.TILE_SIDE; i++) {
+            for (int j = 0; j < Board.TILE_SIDE; j++) {
+                String current = board[i][j];
+                if (current.equals(Board.BLANK)) {
+                    bytes[i * Board.TILE_SIDE + j] = 0;
+                } else {
+                    bytes[i * Board.TILE_SIDE + j] = Byte.valueOf(board[i][j]);
+                }
+            }
+        }
+        return bytes;
+    }
+
 }

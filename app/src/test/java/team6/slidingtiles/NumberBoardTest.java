@@ -1,5 +1,7 @@
 package team6.slidingtiles;
 
+import android.text.BoringLayout;
+
 import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -70,6 +72,18 @@ public class NumberBoardTest {
         boolean successComplete = test.isComplete();
         assertTrue(successSwap);
         assertTrue(successComplete);
+    }
+
+    @Test
+    public void byteArrayCorrect() {
+        NumberBoard test = new NumberBoard(false, 1);
+        test.swapTiles(0, 0);
+        byte[] testBytes = test.getBoardAsBytes();
+        byte[] expBytes = new byte[Board.TILE_COUNT];
+        for (int i = 0; i < Board.TILE_COUNT; i++) {
+            expBytes[i] = (byte)i;
+        }
+        assert(Arrays.equals(testBytes, expBytes));
     }
 
 }
