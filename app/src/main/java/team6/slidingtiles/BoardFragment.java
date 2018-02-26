@@ -176,6 +176,8 @@ public class BoardFragment extends Fragment {
     }
 
     private void onSwipeLeft() {
+
+
         sizeX=boardGrid.getWidth();
         sizeY=boardGrid.getHeight();
 
@@ -193,10 +195,18 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<sizeperx*(i)))
                 j1=i;
+            else if (X1<0 && i==1)
+                j1=1;
+            else if (X1>sizeperx*(5) && i==5)
+               j1=i;
         }
         i=1;
         for(int i=1;i<=5;i++){
             if((X2>=sizeperx*(i-1))&&(X2<sizeperx*(i)))
+                j2=i;
+            else if (X2<0 && i==1)
+                j2=1;
+            else if (X2>sizeperx*(5) && i==5)
                 j2=i;
         }
 
@@ -204,6 +214,10 @@ public class BoardFragment extends Fragment {
         for(int i=1;i<=5;i++){
             if((Y1>=sizepery*(i-1))&&(Y1<sizepery*(i)))
                 i1=i;
+           else if (Y1<0 && i==1)
+                i1=1;
+            else if (Y1>sizepery*(5) && i==5)
+               i1=i;
         }
 
 
@@ -217,8 +231,12 @@ public class BoardFragment extends Fragment {
         starti=5*i1+j1;
         endi=5*i2+j2;
 
-        selectionHandler.handleSWipe(starti,endi);
+        if(starti<0) starti=0;
+        else if (starti>24) starti=24;
+        else if (endi<0) endi =0;
+        else if (endi>24) endi=24;
 
+       selectionHandler.handleSWipe(starti,endi);
     }
 
     private void onSwipeRight() {
@@ -238,16 +256,28 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<sizeperx*(i)))
                 j1=i;
+            else if (X1<0&&i==1)
+                j1=1;
+            else if(X1>sizeperx*5 &&i==5)
+                j1=i;
         }
 
         for(i=1;i<=5;i++){
             if((X2>=sizeperx*(i-1))&&(X2<sizeperx*(i)))
+                j2=i;
+            else if (X2<0&&i==1)
+                j2=1;
+            else if(X2>sizeperx*5 &&i==5)
                 j2=i;
         }
 
 
         for(i=1;i<=5;i++){
             if((Y1>=sizepery*(i-1))&&(Y1<sizepery*(i)))
+                i1=i;
+            else if (Y1<0&&i==1)
+                i1=1;
+            else if(Y1>sizepery*5 &&i==5)
                 i1=i;
         }
 
@@ -260,6 +290,12 @@ public class BoardFragment extends Fragment {
         j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
+
+
+        if(starti<0) starti=0;
+        else if (starti>24) starti=24;
+        else if (endi<0) endi =0;
+        else if (endi>24) endi=24;
 
         selectionHandler.handleSWipe(starti,endi);
 
@@ -282,6 +318,10 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<sizeperx*(i)))
                 j1=i;
+            else if (X1<0&&i==1)
+                j1=1;
+            else if(X1>sizeperx*5 &&i==5)
+                j1=i;
         }
 
         j2=j1;
@@ -289,31 +329,43 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((Y1>=sizepery*(i-1))&&(Y1<sizepery*(i)))
                 i1=i;
+            else if (Y1<0&&i==1)
+                i1=1;
+            else if(Y1>sizepery*5 &&i==5)
+                i1=i;
         }
 
 
         for(i=1;i<=5;i++){
             if((Y2>=sizepery*(i-1))&&(Y2<sizepery*(i)))
                 i2=i;
+            else if (Y2<0 && i==1)
+                i2=1;
+            else if(Y2>sizepery*5 &&i==5)
+                i2=i;
         }
+
         i1=i1-1;
         j1=j1-1;
         i2=i2-1;
         j2=j2-1;
+
         starti=5*i1+j1;
         endi=5*i2+j2;
 
-        selectionHandler.handleSWipe(starti,endi);
 
+        if(starti<0) starti=0;
+        else if (starti>24) starti=24;
+        else if (endi<0) endi =0;
+        else if (endi>24) endi=24;
+
+        selectionHandler.handleSWipe(starti,endi);
 
     }
 
     private void onSwipeBottom() {
         sizeX=boardGrid.getWidth();
         sizeY=boardGrid.getHeight();
-
-
-
 
         sizeperx=sizeX/5;
         sizepery=sizeY/5;
@@ -326,6 +378,10 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((X1>=sizeperx*(i-1))&&(X1<sizeperx*(i)))
                 j1=i;
+            else if (X1<0&&i==1)
+                j1=1;
+            else if(X1>sizeperx*5 &&i==5)
+                j1=i;
         }
 
         j2=j1;
@@ -333,11 +389,19 @@ public class BoardFragment extends Fragment {
         for(i=1;i<=5;i++){
             if((Y1>=sizepery*(i-1))&&(Y1<sizepery*(i)))
                 i1=i;
+            else if (Y1<0&&i==1)
+                i1=1;
+            else if(Y1>sizepery*5 &&i==5)
+                i1=i;
         }
 
 
         for(i=1;i<=5;i++){
             if((Y2>=sizepery*(i-1))&&(Y2<sizepery*(i)))
+                i2=i;
+            else if (Y2<0&&i==1)
+                i2=1;
+            else if(Y2>sizepery*5 &&i==5)
                 i2=i;
         }
 
@@ -347,6 +411,11 @@ public class BoardFragment extends Fragment {
         j2=j2-1;
         starti=5*i1+j1;
         endi=5*i2+j2;
+
+        if(starti<0) starti=0;
+        else if (starti>24) starti=24;
+        else if (endi<0) endi =0;
+        else if (endi>24) endi=24;
 
         selectionHandler.handleSWipe(starti,endi);
 
