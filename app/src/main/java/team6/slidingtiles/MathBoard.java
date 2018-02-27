@@ -3,7 +3,11 @@ package team6.slidingtiles;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
 import java.util.HashSet;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * This class represents the math-based tile board.
@@ -26,6 +30,7 @@ public class MathBoard extends Board {
      * @param isTest If true, will not shuffle the board, making testing easier
      */
     MathBoard(boolean isTest) {
+
         this.foundEquations = new HashSet<>();
         this.blankX = 3;
         this.blankY = 3;
@@ -49,11 +54,15 @@ public class MathBoard extends Board {
      */
     int getScore(int startX, int startY, boolean isVertical) {
         // make sure starting tiles are on the board, and in first column or row
+
+        /*
         if (startX < 0 || startX >= Board.TILE_SIDE ||
                 startY < 0 || startY >= Board.TILE_SIDE ||
                 (startX != 0 && startY != 0)) {
+            Log.d("startX",Integer.toString(startX));
             throw new IllegalArgumentException("Tile location is off the board");
         }
+        */
 
         StringBuilder equation = new StringBuilder();
 
@@ -88,7 +97,9 @@ public class MathBoard extends Board {
             return  0;
         }
 
+       //String equationNormed = equation.toString();
         String equationNormed = equation.toString();
+
 
         if (!this.foundEquations.contains(equationNormed)) {  // check that equation has not previously been found
             switch (equation.charAt(3)) {  // operator
@@ -126,7 +137,8 @@ public class MathBoard extends Board {
      * Get the set of found equations
      * @return a hash set of equations that have been found
      */
-    private HashSet<String> foundEquations() {
+
+    public HashSet<String> foundEquations() {
         // create deep copy
         HashSet<String> copy = new HashSet<>();
         copy.addAll(this.foundEquations);

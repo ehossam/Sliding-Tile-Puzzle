@@ -1,10 +1,13 @@
 package team6.slidingtiles;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,6 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by cheesea on 2/10/18.
@@ -30,12 +35,16 @@ public class MathMode extends GameMode  {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
 
+
+
     int score;
     TextView scoreView;
+    public HashSet<String> ss=new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         gameBoard = null;
+
         super.onCreate(savedInstanceState);
         firebaseAuth = FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser()==null) {
@@ -50,6 +59,14 @@ public class MathMode extends GameMode  {
         score = 0;
         scoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         scoreView.setText(Integer.toString(score));
+
+        ImageButton equationIcon = findViewById(R.id.equation_button);
+        equationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                savedequtions().show();
+            }
+        });
     }
 
     private void saveScore(){
@@ -97,10 +114,32 @@ public class MathMode extends GameMode  {
         return adBuilder;
     }
 
+
+
+    AlertDialog.Builder savedequtions() {
+       final AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+
+        ss=(HashSet)(((MathBoard) gameBoard).foundEquations()).clone();
+        Iterator iterator = ss.iterator();
+        String msg="";
+        while (iterator.hasNext()) {
+            msg+=(String)iterator.next() + "\n";
+            adBuilder.setMessage(msg);
+        }
+
+        adBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            dialog.cancel();
+            }
+        });
+
+        return adBuilder;
+    }
+
     void newGame(){
         super.newGame();
         if(score > 0)
-            newGameDialog().show();
+          newGameDialog().show();
         else
             createGame();
     }
@@ -120,6 +159,7 @@ public class MathMode extends GameMode  {
 
         int endX = end % 5;
         int endY = end / 5;
+
 
         Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
         if ((startX == 0 || endX == 0) && startY == endY) {
