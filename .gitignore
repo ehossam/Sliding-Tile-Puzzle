@@ -5,4 +5,5 @@
 build/
 .navigation
 captures/
-output.json 
+output.json
+local.properties
