@@ -35,8 +35,8 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
         }
         if(view == buttonBasic){
             //TODO : redirect to two player basic mode
-//            Intent intent = new Intent(PlayerMode.this,BasicMode.class);
-//            startActivity(intent);
+            Intent intent = new Intent(PlayerMode.this,MathModeMultiSimple.class);
+            startActivity(intent);
         }
         if(view == buttonCutthroat){
             //TODO : redirect to two player cutthroat mode
