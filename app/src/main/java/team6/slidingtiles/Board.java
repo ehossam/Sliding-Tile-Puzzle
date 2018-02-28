@@ -18,6 +18,7 @@ abstract class Board implements Parcelable{
     final static int TILE_COUNT = (int)(Math.pow(TILE_SIDE, 2));
 
     String[][] board;
+
     int blankX;
     int blankY;
 
@@ -108,5 +109,21 @@ abstract class Board implements Parcelable{
         bundle.putSerializable(ARG_BOARD, board);
         bundle.putInt(ARG_BLANKX, blankX);
         bundle.putInt(ARG_BLANKY, blankY);
+    }
+
+    /**
+     * Get X-coordinate of the blank tile
+     * @return X-coordinate of the blank tile
+     */
+    public int getBlankX() {
+        return this.blankX;
+    }
+
+    /**
+     * Get Y-coordinate of the blank tile
+     * @return Y-coordinate of the blank tile
+     */
+    public int getBlankY() {
+        return this.blankY;
     }
 }
