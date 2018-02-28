@@ -3,6 +3,7 @@ package team6.slidingtiles;
 import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -76,5 +77,52 @@ public class MathBoardTest {
         MathBoard test = new MathBoard(true);
         String board = test.toString();
         assertEquals(board, expected_board);
+    }
+
+    @Test
+    public void boardConstructedFromStringListIsCorrect() {
+        String expected_board = "\n" +
+                "+-----------+\n" +
+                "|   0 1 2 3 |\n" +
+                "| 4 5 6 7 8 |\n" +
+                "| 9 + - * / |\n" +
+                "| = = = = = |\n" +
+                "| = = = = = |\n" +
+                "+-----------+\n";
+        List<String> boardIn = Arrays.asList(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9", "+", "-", "*", "/", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=");
+        MathBoard test = new MathBoard(boardIn);
+        String board = test.toString();
+        assertEquals(board, expected_board);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void boardConstructedFromTwoBlanksStringListThrowsError() {
+       List<String> boardIn = Arrays.asList(" ", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9", "+", "-", "*", "/", "=", "=", "=", "=", "=", "=", "=", "=", "=", " ");
+        MathBoard test = new MathBoard(boardIn);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void boardConstructedFromNoBlanksStringListThrowsError() {
+        List<String> boardIn = Arrays.asList("0", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9", "+", "-", "*", "/", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=");
+        MathBoard test = new MathBoard(boardIn);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void boardConstructedFromShortStringListThrowsError() {
+        List<String> boardIn = Arrays.asList("0", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9", "+", "-", "*", "/", "=", "=", "=", "=", "=", "=", "=", "=", "=");
+        MathBoard test = new MathBoard(boardIn);
+    }
+
+    @Test
+    public void boardConstructedFromStringListHasBlankXYCorrect() {
+        List<String> boardIn = Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8",
+                "9", "+", " ", "-", "*", "/", "=", "=", "=", "=", "=", "=", "=", "=", "=", "=");
+        MathBoard test = new MathBoard(boardIn);
+        assertEquals(test.getBlankX(), 1);
+        assertEquals(test.getBlankY(), 2);
     }
 }

@@ -3,11 +3,11 @@ package team6.slidingtiles;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
-import static android.content.ContentValues.TAG;
 
 /**
  * This class represents the math-based tile board.
@@ -15,13 +15,64 @@ import static android.content.ContentValues.TAG;
 
 public class MathBoard extends Board {
 
+    private static List<String> LEGAL_TILES;
     private HashSet<String> foundEquations;
+
+    static {
+        List<String> temp = new ArrayList<>();
+        temp.add(Board.BLANK);
+        temp.add("=");
+        temp.add("+");
+        temp.add("-");
+        temp.add("*");
+        temp.add("/");
+        for (int i = 0; i < 10; i++) {
+            temp.add(Integer.toString(i));
+        }
+
+        LEGAL_TILES = temp;
+    }
 
     /**
      * MathBoard default constructor
      */
     MathBoard() {
         this(false);
+    }
+
+    /**
+     * MathBoard constructor
+     *
+     * @param inBoard initial state to set this MathBoard to (List of tiles as Strings)
+     */
+    MathBoard(List<String> inBoard) {
+        if (inBoard.size() != Board.TILE_COUNT) {
+            throw new RuntimeException("Wrong number of tiles provided. " +
+                    "Received " + inBoard.size() + ", expected " + Board.TILE_COUNT);
+        }
+        if (Collections.frequency(inBoard, Board.BLANK) != 1) {
+            throw new RuntimeException("There should be only one blank tile.");
+        }
+
+        this.board = new String[Board.TILE_SIDE][Board.TILE_SIDE];
+
+        for (int i = 0; i < Board.TILE_COUNT; i++) {
+            String current = inBoard.get(i);
+            if (!MathBoard.LEGAL_TILES.contains(current)) {
+                throw new RuntimeException("Invalid tile glyph provided.");
+            }
+
+            int currentX = i % Board.TILE_SIDE;
+            int currentY = i / Board.TILE_SIDE;
+            if (current.equals(Board.BLANK)) {
+                this.blankX = currentX;
+                this.blankY = currentY;
+            }
+
+            this.board[currentY][currentX] = current;
+        }
+
+        this.foundEquations = new HashSet<>();
     }
 
     /**
