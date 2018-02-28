@@ -18,6 +18,8 @@ abstract class Board implements Parcelable{
     final static int TILE_COUNT = (int)(Math.pow(TILE_SIDE, 2));
 
     String[][] board;
+
+
     int blankX;
     int blankY;
 
@@ -97,6 +99,14 @@ abstract class Board implements Parcelable{
             System.arraycopy(this.board[i], 0, copy[i], 0, Board.TILE_SIDE);
         }
         return copy;
+    }
+
+    public int getBlankX() {
+        return this.blankX;
+    }
+
+    public int getBlankY() {
+        return this.blankY;
     }
 
     public int describeContents() {
