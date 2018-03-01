@@ -41,7 +41,8 @@ public class RoomFinder {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    room = dataSnapshot.getValue(Room.class);
+                    room  = dataSnapshot.getChildren().iterator().next().getValue(Room.class);
+
                     Log.d("Room class bug", dataSnapshot.getKey());
                     playerNum = 2;
                     databaseReference.child("rooms").child(room.getKey()).child("isOpen").setValue(false);
