@@ -1,9 +1,8 @@
 package team6.slidingtiles;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 /**
@@ -15,7 +14,8 @@ import java.util.List;
 public class AiPlayer {
 
     private NumberBoard board;
-    private State prevMove = null;
+    private State prevState = null;
+    private Queue<State> prevStates = null;
 
     /**
      * Default constructor, must setBoard() before use
@@ -28,7 +28,7 @@ public class AiPlayer {
      * @param board the NumberBoard for the AI player to use
      */
     public AiPlayer(NumberBoard board) {
-        this.board = board;
+        this.setBoard(board);
     }
 
     /**
@@ -37,6 +37,7 @@ public class AiPlayer {
      */
     public void setBoard(NumberBoard board) {
         this.board = board;
+        this.prevStates = new LinkedList<>();
     }
 
     /**
@@ -54,9 +55,14 @@ public class AiPlayer {
      * Call to make the AI player find and make a move
      */
     public void makeMove() {
+        /*
         if ((this.board.getBlankX() == Board.TILE_COUNT - 1 && this.board.getBlankY() == Board.TILE_COUNT - 1) ||
             (this.board.getBlankX() == 0 && this.board.getBlankY() == 0)) {
             System.out.println("asdfasdfasdfasdfasdf");
+            return;
+        }
+        */
+        if (this.board.isComplete()) {
             return;
         }
         State.Location tileToMove = getMove();
@@ -70,20 +76,22 @@ public class AiPlayer {
     @SuppressWarnings("unchecked")
     private State.Location getMove() {
         int[] best = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
-        int[] bestLocation = {-1, -1, -1, -1};
+        int[] bestLocation = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
         State current = new State(this.board.getBoardAsBytes());
-//        List<State>[] moveList = new ArrayList[4];
+        System.out.println(current.distance());
+
+        // Don't return to recently visited states
+        while (prevStates.size() > 9) {
+            prevStates.remove();
+        }
+        prevStates.add(current);
+
         ArrayList<State>[] moveList = (ArrayList<State>[])new ArrayList[4];
-//        List<List<State>> moveList = new ArrayList<List<State>>(4);
-        moveList[0] = new ArrayList<State>();
-        moveList[1] = new ArrayList<State>();
-        moveList[2] = new ArrayList<State>();
-        moveList[3] = new ArrayList<State>();
+        for (int i = 0; i < 4; i++) {
+            moveList[i] = new ArrayList<>();
+        }
         State up = new State(current.getTiles());
         if (up.swap(State.Direction.UP)) {
-//            List<State> temp = new ArrayList<>();
-//            temp.add(up);
-//            moveList.add(temp);
             moveList[0].add(up);
         }
         State rt = new State(current.getTiles());
@@ -99,12 +107,27 @@ public class AiPlayer {
             moveList[3].add(lt);
         }
 
+        // Check up to 3 moves ahead, then choose best option
         for (int i = 0; i < 4; i++) {
             if (moveList[i].size() > 0) {
-                moveList[i].addAll(moveList[i].get(0).getPossibleActions(i)); // remove backwards /////////////
+                // Don't undo the previous move
+                if (prevStates.size() > 0 && prevStates.contains(moveList[i].get(0))) {
+                    moveList[i].clear();
+                    continue;
+                }
+                ArrayList<State> tempStates = new ArrayList<>(moveList[i].get(0).getPossibleActions(i));
+                tempStates.removeAll(prevStates);
+                for (int m = 0; m < 4; m++) {
+                    tempStates.removeAll(moveList[i]);
+                }
+                moveList[i].addAll(tempStates);
                 ArrayList<State> temp = new ArrayList<>();
                 for (int j = 1; j < moveList[i].size(); j++) {
-                    temp.addAll(moveList[i].get(j).getPossibleActions(99));  // mess ///
+                    temp.addAll(moveList[i].get(j).getPossibleActions(-1));
+                }
+                temp.removeAll(prevStates);
+                for (int m = 0; m < 4; m++) {
+                    temp.removeAll(moveList[i]);
                 }
                 moveList[i].addAll(temp);
 
@@ -118,18 +141,26 @@ public class AiPlayer {
             }
         }
 
+        // Find the best direction to go
         int theBest = 0;
-        System.out.println(best[0]);
         for (int i = 1; i < 4; i++){
-            System.out.println(best[i]);
-            if (best[i] <= best[theBest] && bestLocation[i] <= bestLocation[theBest]) {
+            if (best[i] < best[theBest]) {
+                theBest = i;
+            } else if (best[i] == best[theBest] && bestLocation[i] < bestLocation[theBest]) {
                 theBest = i;
             }
         }
 
-        prevMove = moveList[theBest].get(bestLocation[theBest]); ////////////// wrong ///////////////////////
 
-        return moveList[theBest].get(0).getBlankLocation();
+        if (moveList[theBest].size() > 0) {
+            return moveList[theBest].get(0).getBlankLocation();
+        } else { // AI was dumb, needs to go to a state it already visited
+            if (!up.equals(current)) {
+                return up.getBlankLocation();
+            } else {
+                return dn.getBlankLocation();
+            }
+        }
     }
 
 }

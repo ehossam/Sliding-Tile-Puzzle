@@ -10,21 +10,19 @@ import static org.junit.Assert.assertEquals;
 public class AiPlayerTest {
     @Test
     public void test() {
-        NumberBoard testBoard = new NumberBoard(true, 25);
+        NumberBoard testBoard = new NumberBoard(true,3);
         AiPlayer testPlayer = new AiPlayer();
         testPlayer.setBoard(testBoard);
-        System.out.println(testBoard);
-        testPlayer.makeMove();
-        System.out.println(testBoard);
-        testPlayer.makeMove();
-        System.out.println(testBoard);
-        testPlayer.makeMove();
-        System.out.println(testBoard);
-        testPlayer.makeMove();
-        System.out.println(testBoard);
-        testPlayer.makeMove();
-        System.out.println(testBoard);
-        testPlayer.makeMove();
+        int count = 0;
+        while (!testBoard.isComplete()) {
+            System.out.println("Loop: " + count++);
+            System.out.println(testBoard);
+            testPlayer.makeMove();
+            if (count > 10000) {
+                break;
+            }
+        }
+        System.out.println("Loops: " + count);
         System.out.println(testBoard);
     }
 }

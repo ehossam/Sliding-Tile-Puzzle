@@ -179,7 +179,7 @@ public class State {
     /**
      * Returns the Manhattan distance from the current state to the winning state
      *
-     * @return total Manhatten distance for this board/state
+     * @return total Manhattan distance for this board/state
      */
     public int distance() {
         int counter = 0;
@@ -198,7 +198,57 @@ public class State {
             int difference = Math.abs(row - expectedRow) + Math.abs(column - expectedColumn);
             counter += difference;
         }
+
+        counter += linearVerticalConflict();
+        counter += linearHorizontalConflict();
+
         return counter;
+    }
+
+    private int linearVerticalConflict() {
+        int dimension = Board.TILE_SIDE;
+        int linearConflict = 0;
+
+        for (int row = 0; row < dimension; row++){
+            byte max = -1;
+            for (int column = 0;  column < dimension; column++){
+                byte cellValue = this.tiles[row * Board.TILE_SIDE + column];
+                //is tile in its goal row ?
+                if (cellValue != 0 && (cellValue - 1) / dimension == row){
+                    if (cellValue > max){
+                        max = cellValue;
+                    }else {
+                        //linear conflict, one tile must move up or down to allow the other to pass by and then back up
+                        //add two moves to the manhattan distance
+                        linearConflict += 2;
+                    }
+                }
+            }
+        }
+        return linearConflict;
+    }
+
+    private int linearHorizontalConflict() {
+        int dimension = Board.TILE_SIDE;
+        int linearConflict = 0;
+
+        for (int column = 0; column < dimension; column++) {
+            byte max = -1;
+            for (int row = 0;  row < dimension; row++){
+                byte cellValue = this.tiles[row * Board.TILE_SIDE + column];
+                //is tile in its goal row ?
+                if (cellValue != 0 && cellValue % dimension == column + 1){
+                    if (cellValue > max){
+                        max = cellValue;
+                    }else {
+                        //linear conflict, one tile must move left or right to allow the other to pass by and then back up
+                        //add two moves to the manhattan distance
+                        linearConflict += 2;
+                    }
+                }
+            }
+        }
+        return linearConflict;
     }
 
     public boolean swap(Direction dir) {
@@ -207,11 +257,11 @@ public class State {
             case UP:
                 return swapSpots(blank, blank - Board.TILE_SIDE);
             case RIGHT:
-                return swapSpots(blank + 1, blank);
+                return blank % Board.TILE_SIDE < Board.TILE_SIDE - 1 && swapSpots(blank + 1, blank);
             case DOWN:
                 return swapSpots(blank, blank + Board.TILE_SIDE);
             case LEFT:
-                return swapSpots(blank - 1, blank);
+                return blank % Board.TILE_SIDE > 0 && swapSpots(blank - 1, blank);
             default:
                 return false;
         }
