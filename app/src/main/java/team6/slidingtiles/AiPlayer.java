@@ -4,31 +4,45 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+// How to use:
+// 1. Use NumberBoard copy constructor to dupe human player's board.
+// 2. Create AiPlayer with that NumberBoard
+// 3. EITHER .getNextMove() to get the State.Location of the tile to swap,
+//        then call <NumberBoard>.swapTiles(move.getXIndex(), move.getYIndex()) yourself
+//            (.getNextMove() returns null when .isComplete())
+//    OR .makeMove() and the AiPlayer updates the NumberBoard itself
+// See AiPlayerTest.java for implementation details
 
 /**
  * AI player for number board game
- * - create player with number board or set one, then call makeMove to make the player choose and
- *   complete a move
+ * create player with number board or set one, then call makeMove to make the player choose and
+ * complete a move
  */
 
 public class AiPlayer {
-
+    private int maxPrevStates;
+    private int maxDepth;
     private NumberBoard board;
-    private State prevState = null;
-    private Queue<State> prevStates = null;
+    private Queue<State> prevStates;
+    private int moveCount;
 
     /**
      * Default constructor, must setBoard() before use
      */
     public AiPlayer() {
+        this.maxPrevStates = 10;
+        this.maxDepth = 8;
     }
 
     /**
      * Preferred constructor
      * @param board the NumberBoard for the AI player to use
+     * @param maxDepth the maximum number of moves for the AI to look ahead
      */
-    public AiPlayer(NumberBoard board) {
+    public AiPlayer(NumberBoard board, int maxDepth) {
         this.setBoard(board);
+        this.maxPrevStates = 10;
+        this.maxDepth = maxDepth;
     }
 
     /**
@@ -38,39 +52,51 @@ public class AiPlayer {
     public void setBoard(NumberBoard board) {
         this.board = board;
         this.prevStates = new LinkedList<>();
+        this.moveCount = 0;
     }
-
-    /**
-     * Set the depth (in moves) for the AI to search
-     * @param depth number of consecutive moves to search for "ideal" next move
-    public void setDepth(int depth) {
-        if (depth < 1) {
-            throw new RuntimeException("Search depth must be greater than 0");
-        }
-        this.depth = depth;
-    }
-     */
 
     /**
      * Call to make the AI player find and make a move
      */
     public void makeMove() {
-        /*
-        if ((this.board.getBlankX() == Board.TILE_COUNT - 1 && this.board.getBlankY() == Board.TILE_COUNT - 1) ||
-            (this.board.getBlankX() == 0 && this.board.getBlankY() == 0)) {
-            System.out.println("asdfasdfasdfasdfasdf");
-            return;
+        if (this.board == null) {
+            throw new IllegalArgumentException("setBoard() has not been called");
         }
-        */
         if (this.board.isComplete()) {
             return;
         }
         State.Location tileToMove = getMove();
+        this.moveCount++;
+        // this should ensure that any repeating cycles the AI gets caught in will _eventually_ break
+        if (this.moveCount % 20 == 0) {
+            this.maxPrevStates++;
+        }
         board.swapTiles(tileToMove.getXIndex(), tileToMove.getYIndex());
     }
 
     /**
+     * Call to get the AI player move
+     */
+    public State.Location getNextMove() {
+        if (this.board == null) {
+            throw new IllegalArgumentException("setBoard() has not been called");
+        }
+        if (this.board.isComplete()) {
+            return null;
+        }
+        State.Location tileToMove = getMove();
+        this.moveCount++;
+        // this should ensure that any repeating cycles the AI gets caught in will _eventually_ break
+        if (this.moveCount % 20 == 0) {
+            this.maxPrevStates++;
+        }
+        return new State.Location(tileToMove.getXIndex(), tileToMove.getYIndex());
+    }
+
+    /**
      * Returns the best available move (tile Location) for the AI player to choose
+     * The AI player looks 3 moves ahead to decide the best option. Highly randomized boards will
+     * make the AI seem very stupid.
      * @return Location of the tile to swap with the blank
      */
     @SuppressWarnings("unchecked")
@@ -78,10 +104,9 @@ public class AiPlayer {
         int[] best = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
         int[] bestLocation = {Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE};
         State current = new State(this.board.getBoardAsBytes());
-        System.out.println(current.distance());
 
         // Don't return to recently visited states
-        while (prevStates.size() > 9) {
+        while (prevStates.size() >= this.maxPrevStates) {
             prevStates.remove();
         }
         prevStates.add(current);
@@ -107,7 +132,7 @@ public class AiPlayer {
             moveList[3].add(lt);
         }
 
-        // Check up to 3 moves ahead, then choose best option
+        // Check up to maxDepth moves ahead, then return best option
         for (int i = 0; i < 4; i++) {
             if (moveList[i].size() > 0) {
                 // Don't undo the previous move
@@ -115,22 +140,34 @@ public class AiPlayer {
                     moveList[i].clear();
                     continue;
                 }
+                /*
                 ArrayList<State> tempStates = new ArrayList<>(moveList[i].get(0).getPossibleActions(i));
                 tempStates.removeAll(prevStates);
                 for (int m = 0; m < 4; m++) {
                     tempStates.removeAll(moveList[i]);
                 }
                 moveList[i].addAll(tempStates);
-                ArrayList<State> temp = new ArrayList<>();
-                for (int j = 1; j < moveList[i].size(); j++) {
-                    temp.addAll(moveList[i].get(j).getPossibleActions(-1));
-                }
-                temp.removeAll(prevStates);
-                for (int m = 0; m < 4; m++) {
-                    temp.removeAll(moveList[i]);
-                }
-                moveList[i].addAll(temp);
+                */
 
+                int min = 0;
+                int max;
+                for (int z = 0; z < this.maxDepth - 1; z++) {
+                    max = moveList[i].size();
+                    ArrayList<State> temp = new ArrayList<>();
+                    for (int j = min; j < max; j++) {
+                        temp.addAll(moveList[i].get(j).getPossibleActions(-1));
+                    }
+                    min = max;
+                    temp.removeAll(prevStates);
+                    /*
+                    for (int m = 0; m < 4; m++) {
+                        temp.removeAll(moveList[i]);
+                    }
+                    */
+                    moveList[i].addAll(temp);
+                }
+
+                // find best distance possible from this starting direction
                 for (int x = 0; x < moveList[i].size(); x++) {
                     int dist = moveList[i].get(x).distance();
                     if (dist < best[i]) {
@@ -151,13 +188,12 @@ public class AiPlayer {
             }
         }
 
-
         if (moveList[theBest].size() > 0) {
             return moveList[theBest].get(0).getBlankLocation();
-        } else { // AI was dumb, needs to go to a state it already visited
-            if (!up.equals(current)) {
+        } else { // AI was dumb, so it must go to a state it already visited
+            if (!up.equals(current)) { // just go up, if possible
                 return up.getBlankLocation();
-            } else {
+            } else { // otherwise, go down
                 return dn.getBlankLocation();
             }
         }

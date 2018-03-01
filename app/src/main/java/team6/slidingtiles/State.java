@@ -31,12 +31,12 @@ public class State {
         public Location() {
         }
 
-        public Location(int yIndex, int xIndex) {
+        public Location(int xIndex, int yIndex) {
             if (yIndex < 0 || xIndex < 0 || yIndex >= Board.TILE_SIDE || xIndex >= Board.TILE_SIDE) {
                 throw new RuntimeException("Tile location is not on the board");
             }
-            this.y = yIndex;
             this.x = xIndex;
+            this.y = yIndex;
         }
 
         public int getYIndex() {
@@ -111,29 +111,31 @@ public class State {
         return hashCode;
     }
 
+    /*
     public List<Location> getPossibleActionsLocations() {
         List<Location> tilesToSwap = new ArrayList<>();
         int blankX = getBlankLocation().getXIndex();
         int blankY = getBlankLocation().getYIndex();
 
         if (blankY > 0) {
-            tilesToSwap.add(new Location(blankY - 1, blankX));
+            tilesToSwap.add(new Location(blankX, blankY - 1));
         }
 
         if (blankY < Board.TILE_SIDE - 1) {
-            tilesToSwap.add(new Location(blankY + 1, blankX));
+            tilesToSwap.add(new Location(blankX, blankY + 1));
         }
 
         if (blankX > 0) {
-            tilesToSwap.add(new Location(blankY, blankX - 1));
+            tilesToSwap.add(new Location(blankX - 1, blankY));
         }
 
         if (blankX < Board.TILE_SIDE - 1) {
-            tilesToSwap.add(new Location(blankY, blankX + 1));
+            tilesToSwap.add(new Location(blankX + 1, blankY));
         }
 
         return tilesToSwap;
     }
+    */
 
     public List<State> getPossibleActions(int dir) {
         List<State> actions = new ArrayList<>();
@@ -170,7 +172,7 @@ public class State {
     public Location getBlankLocation() {
         for (int i = 0; i < Board.TILE_COUNT; i++) {
             if (tiles[i] == 0) {
-                return new Location(i / Board.TILE_SIDE, i % Board.TILE_SIDE);
+                return new Location(i % Board.TILE_SIDE, i / Board.TILE_SIDE);
             }
         }
         throw new RuntimeException("No Empty tile found");

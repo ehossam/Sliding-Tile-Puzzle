@@ -18,6 +18,16 @@ public class NumberBoard extends Board {
     }
 
     /**
+     * NumberBoard copy constructor
+     */
+    NumberBoard(NumberBoard input) {
+        super();
+        this.board = input.getBoard();
+        this.blankX = input.blankX;
+        this.blankY = input.blankY;
+    }
+
+    /**
      * NumberBoard constructor
      * @param isBlankLast If true, the last space on the board will be blank,
      *                     otherwise the first space will be blank.
