@@ -42,7 +42,7 @@ public class RoomFinder {
                 if(dataSnapshot.exists()) {
                     room = dataSnapshot.getValue(Room.class);
                     playerNum = 2;
-                    databaseReference.child("rooms").child("isOpen").setValue(false);
+                    databaseReference.child("rooms").child(room.getKey()).child("isOpen").setValue(false);
                 } else {
                     createOpenRoom();
                 }

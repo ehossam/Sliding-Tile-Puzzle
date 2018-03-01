@@ -40,6 +40,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     private FirebaseAuth firebaseAuth;
     RoomFinder roomFinder;
 
+    AlertDialog matchingDialog;
     int myScore;
     int theirScore;
     TextView theirScoreView;
@@ -76,6 +77,8 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                 savedequtions().show();
             }
         });
+
+        newGame();
     }
 
     private void saveScore(){
@@ -207,20 +210,21 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             }
         });
 
-        AlertDialog alertDialog = adBuilder.create();
-        alertDialog.show();
+        adBuilder.setView(findViewById(R.id.matching_dialog_view));
+        matchingDialog = adBuilder.create();
+        matchingDialog.show();
 
         roomFinder = new RoomFinder(this);
         roomFinder.getOpenRoom();
-        alertDialog.dismiss();
     }
 
     @Override
     public void roomFound() {
         room = roomFinder.getRoom();
         playerNum = roomFinder.getPlayerNum();
-        //SetBoard(new MathBoard(room.getInitBoardState()));
+        SetBoard(new MathBoard(room.getInitBoardState()));
         updateScores();
+        matchingDialog.dismiss();
         super.createGame();
     }
 
