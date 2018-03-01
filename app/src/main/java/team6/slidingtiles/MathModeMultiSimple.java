@@ -223,9 +223,10 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     public void roomFound() {
         room = roomFinder.getRoom();
         playerNum = roomFinder.getPlayerNum();
-        SetBoard(new MathBoard(room.getInitBoardState()));
+//        this.gameBoard = new MathBoard(room.getInitBoardState());
+//        SetBoard(this.gameBoard);
         updateScores();
-        matchingDialog.dismiss();
+        matchingDialog.cancel();
         super.createGame();
     }
 
@@ -242,6 +243,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            matchingDialog.dismiss();
             room = dataSnapshot.getValue(Room.class);
             updateScores();
         }
