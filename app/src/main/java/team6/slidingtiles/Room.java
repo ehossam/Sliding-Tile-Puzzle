@@ -8,11 +8,11 @@ import java.util.List;
  */
 
 public class Room {
-    Boolean isOpen;
-    int p1Score;
-    int p2Score;
-    List<String> initBoardState;
-    List<String> usedEquations;
+    private Boolean isOpen;
+    private int p1Score;
+    private int p2Score;
+    private List<String> initBoardState;
+    private List<String> usedEquations;
     long time;
     String key;
 
@@ -23,6 +23,7 @@ public class Room {
         time    = 0;
         usedEquations = new ArrayList<>();
         initBoardState = new ArrayList<>();
+ //       key = null;
     }
 
     public Room(List<String> initBoardState){
@@ -30,14 +31,17 @@ public class Room {
         p1Score = 0;
         p2Score = 0;
         time    = 0;
+  //      key = null;
         usedEquations = new ArrayList<>();
 
         this.initBoardState = initBoardState;
     }
 
+    /*
     public void setKey(String key) {
         this.key = key;
     }
+    */
 
     public void setP1Score(int p1Score) {
         this.p1Score = p1Score;
@@ -55,16 +59,16 @@ public class Room {
         this.initBoardState = initBoardState;
     }
 
-    public String getKey() {
-        return key;
-    }
-
     public void setTime(long time) {
         this.time = time;
     }
 
-    public void setOpen(Boolean open) {
+    public void setIsOpen(Boolean open) {
         isOpen = open;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public int getP1Score() {
@@ -75,20 +79,26 @@ public class Room {
         return p2Score;
     }
 
-    public Boolean getOpen() {
-        return isOpen;
+    public List<String> getUsedEquations() {
+        return usedEquations;
     }
 
     public List<String> getInitBoardState() {
         return initBoardState;
     }
 
-    public List<String> getUsedEquations() {
-        return usedEquations;
+    public Boolean getIsOpen() {
+        return isOpen;
     }
+
+
 
     public long getTime() {
         return time;
+    }
+
+    public void setKey(String key){
+        this.key = key;
     }
 }
 

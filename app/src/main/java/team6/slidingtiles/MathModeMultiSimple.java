@@ -48,6 +48,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     public HashSet<String> ss=new HashSet<>();
     private Room room;
     int playerNum;
+    String roomKey;
     HashSet<String> usedEquations;
 
     @Override
@@ -191,7 +192,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             room.setP2Score(myScore);
             playerString = "p2Score";
         }
-        databaseReference.child("rooms").child(room.getKey()).child(playerString).setValue(myScore);
+        databaseReference.child("rooms").child(roomKey).child(playerString).setValue(myScore);
     }
 
     public void matchingDialog(){

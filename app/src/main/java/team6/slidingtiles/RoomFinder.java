@@ -22,11 +22,12 @@ import java.util.Queue;
  */
 
 public class RoomFinder {
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
     private FirebaseAuth firebaseAuth;
     private RoomFinderListener roomFinderListener;
     Room room;
     int playerNum;
+    public String id;
 
     public RoomFinder(MathModeMultiSimple mathModeMultiSimple){
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -41,12 +42,12 @@ public class RoomFinder {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
                     room = dataSnapshot.getValue(Room.class);
+                    Log.d("Room class bug", dataSnapshot.getKey());
                     playerNum = 2;
                     databaseReference.child("rooms").child(room.getKey()).child("isOpen").setValue(false);
                 } else {
                     createOpenRoom();
                 }
-
             }
 
             @Override
