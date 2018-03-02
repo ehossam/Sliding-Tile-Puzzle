@@ -15,8 +15,7 @@ public class AiPlayerTest {
         testBoard.swapTiles(3, 3);
         testBoard.swapTiles(2, 3);
         // board is now 3 moves from complete
-        AiPlayer testPlayer = new AiPlayer();
-        testPlayer.setBoard(testBoard);
+        AiPlayer testPlayer = new AiPlayer(testBoard, 8);
 
         for (int i = 0; i < 3; i++) {
             testPlayer.makeMove();
@@ -36,7 +35,19 @@ public class AiPlayerTest {
 
         for (int i = 0; i < 3; i++) {
             State.Location move = testPlayer.getNextMove();
-            testBoard.swapTiles(move.getXIndex(), move.getYIndex());
+            testBoard.swapTiles(move.getX(), move.getY());
+        }
+
+        assert(testBoard.isComplete());
+    }
+
+    @Test
+    public void aiPlayerCompletesRandomBoardInReasonableNumberOfMoves() {
+        NumberBoard testBoard = new NumberBoard(true, 5); // = shuffled 25 times
+        AiPlayer testPlayer = new AiPlayer(testBoard, 10);
+        int count = 0;
+        while (!testBoard.isComplete() && count++ < 100) {
+            testPlayer.makeMove();
         }
 
         assert(testBoard.isComplete());
@@ -49,13 +60,10 @@ public class AiPlayerTest {
         NumberBoard testBoard = new NumberBoard(true, 100); // = shuffled 10,000 times
         AiPlayer testPlayer = new AiPlayer(testBoard, 10);
         int count = 0;
-        while (!testBoard.isComplete()) {
-            System.out.print("Move " + count++);
+        while (!testBoard.isComplete() && count++ < 10000) { // make sure it can't loop forever, just in case
+            System.out.print("Move " + count);
             System.out.println(testBoard);
             testPlayer.makeMove();
-            if (count > 10000) {
-                break;
-            }
         }
         System.out.println(testBoard);
         System.out.println("Moves: " + count);
@@ -72,12 +80,8 @@ public class AiPlayerTest {
             int count = 0;
             NumberBoard testBoard = new NumberBoard(true, 100); // = shuffled 10,000 times
             testPlayer.setBoard(testBoard);
-            while (!testBoard.isComplete()) {
+            while (!testBoard.isComplete() && count++ < 10000) { // make sure it can't loop forever, just in case
                 testPlayer.makeMove();
-                count++;
-                if (count > 10000) {
-                    break;
-                }
             }
             loops[i] = count;
             System.out.println(i);

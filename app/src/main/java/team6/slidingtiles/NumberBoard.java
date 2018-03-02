@@ -65,7 +65,7 @@ public class NumberBoard extends Board {
      * Check if the board is complete/done
      * @return true if the board is complete, false otherwise
      */
-    public boolean isComplete() {
+    boolean isComplete() {
         // blank tile is first
         if (this.board[0][0].equals(Board.BLANK)) {
             for (int i = 1; i < Board.TILE_COUNT; i++) {
@@ -125,7 +125,7 @@ public class NumberBoard extends Board {
      * Get the board in byte array representation (for AI)
      * @return a byte string representing the board current state
      */
-    public byte[] getBoardAsBytes() {
+    byte[] getBoardAsBytes() {
         byte[] bytes = new byte[Board.TILE_COUNT];
         for (int i = 0; i < Board.TILE_SIDE; i++) {
             for (int j = 0; j < Board.TILE_SIDE; j++) {

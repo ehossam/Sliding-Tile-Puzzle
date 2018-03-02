@@ -5,11 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * State to track AI
- * Based on the work of Julien Dramaix (https://github.com/jDramaix/SlidingPuzzle)
+ * This class represents a board State to help the AI player look ahead
+ * This class contains some modified code based on the work of Julien Dramaix
+ * (https://github.com/jDramaix/)
  */
 
 public class State {
+    private byte[] tiles;
 
     public enum Direction {
         UP(0), RIGHT(1), LEFT(2), DOWN(3);
@@ -18,77 +20,85 @@ public class State {
         Direction(int v) {
             value = v;
         }
+
         int getValue() {
             return this.value;
         }
     }
 
-    public static class Location {
+    static class Location {
 
         private int x;
         private int y;
 
-        public Location() {
-        }
-
-        public Location(int xIndex, int yIndex) {
-            if (yIndex < 0 || xIndex < 0 || yIndex >= Board.TILE_SIDE || xIndex >= Board.TILE_SIDE) {
+        /**
+         * Location constructor
+         * @param x x-coordinate of Location
+         * @param y y-coordinate of Location
+         */
+        Location(int x, int y) {
+            if (y < 0 || x < 0 || y >= Board.TILE_SIDE || x >= Board.TILE_SIDE) {
                 throw new RuntimeException("Tile location is not on the board");
             }
-            this.x = xIndex;
-            this.y = yIndex;
+            this.x = x;
+            this.y = y;
         }
 
-        public int getYIndex() {
+        /**
+         * Get x-coordinate of Location
+         * @return x-coordinate of Location
+         */
+        int getX() {
+            return this.x;
+        }
+
+        /**
+         * Get y-coordinate of Location
+         * @return y-coordinate of Location
+         */
+        int getY() {
             return this.y;
         }
 
-        public int getXIndex() {
-            return this.x;
+        /**
+         * Checks equality of two Locations
+         * @param obj the Location to compare to this one
+         * @return true if the Locations are equal, false otherwise
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Location) {
+                Location other = (Location) obj;
+                return  other.x == this.x && other.y == this.y;
+            }
+            return false;
         }
     }
 
-    public final static State GOAL_FIRST;
-    public final static State GOAL_LAST;
-
-    private int hashCode = -1;
-    private byte[] tiles;
-
-    public State() {
-    }
-
-    public State(byte[] inTiles) {
+    /**
+     * State constructor
+     * @param inTiles the byte array of tiles to copy
+     */
+    State(byte[] inTiles) {
         tiles = new byte[inTiles.length];
         System.arraycopy(inTiles, 0, this.tiles, 0, inTiles.length);
     }
 
-    public byte[] getTiles() {
+    /**
+     * Get the byte array of tiles
+     * @return the byte array of tiles
+     */
+    byte[] getTiles() {
         byte[] tilesOut = new byte[tiles.length];
         System.arraycopy(this.tiles, 0, tilesOut, 0, this.tiles.length);
         return tilesOut;
     }
 
-    private static State getGoal(boolean isBlankFirst) {
-        byte[] expBytes = new byte[Board.TILE_COUNT];
-        if (isBlankFirst) {
-            for (int i = 0; i < Board.TILE_COUNT; i++) {
-                expBytes[i] = (byte) i;
-            }
-        } else {
-            for (int i = 0; i < Board.TILE_COUNT - 1; i++) {
-                expBytes[i] = (byte) (i + 1);
-            }
-            expBytes[Board.TILE_COUNT - 1] = 0;
-        }
-
-        return new State(expBytes);
-    }
-
-    static {
-        GOAL_FIRST = getGoal(true);
-        GOAL_LAST = getGoal(false);
-    }
-
+    /**
+     * Checks equality of two States
+     * @param obj the State to compare to this one
+     * @return true if the states are equal, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof State) {
@@ -99,91 +109,60 @@ public class State {
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        if (hashCode == -1) {
-            int result = 17;
-            for (int i = 0; i < Board.TILE_COUNT; i++) {
-                result = 31 * result + this.tiles[i];
-            }
-            hashCode = result;
-        }
-        return hashCode;
-    }
+    /**
+     * Get a list of potential states within one move of the current state
+     * @param prevDir The direction to exclude from the list of states (previous state)
+     * @return the list of states that can be reached from this state in one move
+     */
+    List<State> getFollowingStates(int prevDir) {
+        List<State> states = new ArrayList<>();
+        int blankX = getBlankLocation().getX();
+        int blankY = getBlankLocation().getY();
 
-    /*
-    public List<Location> getPossibleActionsLocations() {
-        List<Location> tilesToSwap = new ArrayList<>();
-        int blankX = getBlankLocation().getXIndex();
-        int blankY = getBlankLocation().getYIndex();
-
-        if (blankY > 0) {
-            tilesToSwap.add(new Location(blankX, blankY - 1));
-        }
-
-        if (blankY < Board.TILE_SIDE - 1) {
-            tilesToSwap.add(new Location(blankX, blankY + 1));
-        }
-
-        if (blankX > 0) {
-            tilesToSwap.add(new Location(blankX - 1, blankY));
-        }
-
-        if (blankX < Board.TILE_SIDE - 1) {
-            tilesToSwap.add(new Location(blankX + 1, blankY));
-        }
-
-        return tilesToSwap;
-    }
-    */
-
-    public List<State> getPossibleActions(int dir) {
-        List<State> actions = new ArrayList<>();
-        int blankX = getBlankLocation().getXIndex();
-        int blankY = getBlankLocation().getYIndex();
-
-        if (blankY > 0 && dir != Direction.UP.getValue()) {
+        if (blankY > 0 && prevDir != Direction.UP.getValue()) {
             State next = new State(this.tiles);
             next.swap(Direction.UP);
-            actions.add(next);
+            states.add(next);
         }
-
-        if (blankY < Board.TILE_SIDE - 1 && dir != Direction.DOWN.getValue()) {
+        if (blankY < Board.TILE_SIDE - 1 && prevDir != Direction.DOWN.getValue()) {
             State next = new State(this.tiles);
             next.swap(Direction.DOWN);
-            actions.add(next);
+            states.add(next);
         }
-
-        if (blankX > 0 && dir != Direction.LEFT.getValue()) {
+        if (blankX > 0 && prevDir != Direction.LEFT.getValue()) {
             State next = new State(this.tiles);
             next.swap(Direction.LEFT);
-            actions.add(next);
+            states.add(next);
         }
-
-        if (blankX < Board.TILE_SIDE - 1 && dir != Direction.RIGHT.getValue()) {
+        if (blankX < Board.TILE_SIDE - 1 && prevDir != Direction.RIGHT.getValue()) {
             State next = new State(this.tiles);
             next.swap(Direction.RIGHT);
-            actions.add(next);
+            states.add(next);
         }
 
-        return actions;
-    }
-
-    public Location getBlankLocation() {
-        for (int i = 0; i < Board.TILE_COUNT; i++) {
-            if (tiles[i] == 0) {
-                return new Location(i % Board.TILE_SIDE, i / Board.TILE_SIDE);
-            }
-        }
-        throw new RuntimeException("No Empty tile found");
+        return states;
     }
 
     /**
-     * Returns the Manhattan distance from the current state to the winning state
-     *
-     * @return total Manhattan distance for this board/state
+     * Get the location of the blank tile
+     * @return the Location of the blank tile
      */
-    public int distance() {
+    Location getBlankLocation() {
+        for (int i = 0; i < Board.TILE_COUNT; i++) {
+            if (tiles[i] == 0) { // (byte)0 is the blank tile in this representation
+                return new Location(i % Board.TILE_SIDE, i / Board.TILE_SIDE);
+            }
+        }
+        throw new RuntimeException("No blank tile found");
+    }
+
+    /**
+     * Returns the Manhattan + linear conflict distance from the current state to the winning state
+     *
+     * @param isBlankLast if the blank tile is expected to be first (or last)
+     * @return total Manhattan + linear conflict distance for this board/state
+     */
+    int distance(boolean isBlankLast) {
         int counter = 0;
 
         for (int i = 0; i < Board.TILE_COUNT; i++) {
@@ -194,8 +173,11 @@ public class State {
 
             int row = i / Board.TILE_SIDE;
             int column = i % Board.TILE_SIDE;
-            int expectedRow = (value - 1) / Board.TILE_SIDE;
-            int expectedColumn = (value - 1) % Board.TILE_SIDE;
+            if (isBlankLast) {
+                value--;
+            }
+            int expectedRow = value / Board.TILE_SIDE;
+            int expectedColumn = value % Board.TILE_SIDE;
 
             int difference = Math.abs(row - expectedRow) + Math.abs(column - expectedColumn);
             counter += difference;
@@ -207,21 +189,22 @@ public class State {
         return counter;
     }
 
+    /**
+     * Get the linear vertical conflict moves for this state
+     * @return the total linear vertical conflict moves for this state
+     */
     private int linearVerticalConflict() {
         int dimension = Board.TILE_SIDE;
         int linearConflict = 0;
 
-        for (int row = 0; row < dimension; row++){
-            byte max = -1;
-            for (int column = 0;  column < dimension; column++){
-                byte cellValue = this.tiles[row * Board.TILE_SIDE + column];
-                //is tile in its goal row ?
-                if (cellValue != 0 && (cellValue - 1) / dimension == row){
-                    if (cellValue > max){
-                        max = cellValue;
-                    }else {
-                        //linear conflict, one tile must move up or down to allow the other to pass by and then back up
-                        //add two moves to the manhattan distance
+        for (int row = 0; row < dimension; row++) {
+            int max = -1;
+            for (int column = 0; column < dimension; column++) {
+                int tileValue = this.tiles[row * Board.TILE_SIDE + column];
+                if (tileValue != 0 && (tileValue - 1) / dimension == row) {
+                    if (tileValue > max) {
+                        max = tileValue;
+                    } else {
                         linearConflict += 2;
                     }
                 }
@@ -230,21 +213,22 @@ public class State {
         return linearConflict;
     }
 
+    /**
+     * Get the linear horizontal conflict moves for this state
+     * @return the total linear horizontal conflict moves for this state
+     */
     private int linearHorizontalConflict() {
         int dimension = Board.TILE_SIDE;
         int linearConflict = 0;
 
         for (int column = 0; column < dimension; column++) {
-            byte max = -1;
-            for (int row = 0;  row < dimension; row++){
-                byte cellValue = this.tiles[row * Board.TILE_SIDE + column];
-                //is tile in its goal row ?
-                if (cellValue != 0 && cellValue % dimension == column + 1){
-                    if (cellValue > max){
-                        max = cellValue;
-                    }else {
-                        //linear conflict, one tile must move left or right to allow the other to pass by and then back up
-                        //add two moves to the manhattan distance
+            int max = -1;
+            for (int row = 0; row < dimension; row++) {
+                int tileValue = this.tiles[row * Board.TILE_SIDE + column];
+                if (tileValue != 0 && tileValue % dimension == column + 1) {
+                    if (tileValue > max) {
+                        max = tileValue;
+                    } else {
                         linearConflict += 2;
                     }
                 }
@@ -253,7 +237,12 @@ public class State {
         return linearConflict;
     }
 
-    public boolean swap(Direction dir) {
+    /**
+     * Swaps the blank tile with the tile in the provided direction
+     * @param dir the direction to swap the blank tile to
+     * @return true if the swap was successful, otherwise false
+     */
+    boolean swap(Direction dir) {
         int blank = this.getBlankIndex();
         switch (dir) {
             case UP:
@@ -269,6 +258,12 @@ public class State {
         }
     }
 
+    /**
+     * Swaps the tiles at the provided indices
+     * @param first the index of the first tile
+     * @param second the index of the second tile
+     * @return true if the swap was successful, otherwise false
+     */
     private boolean swapSpots(int first, int second) {
         if (first < 0 || first >= Board.TILE_COUNT || second < 0 || second >= Board.TILE_COUNT) {
             return false;
@@ -279,15 +274,23 @@ public class State {
         return true;
     }
 
+    /**
+     * Get the index of the blank tile
+     * @return the index of the blank tile
+     */
     private int getBlankIndex() {
         for (int i = 0; i < Board.TILE_COUNT; i++) {
             if (tiles[i] == 0) {
                 return i;
             }
         }
-        throw new RuntimeException("No Empty tile found");
+        throw new RuntimeException("No blank tile found");
     }
 
+    /**
+     * Get the String rep. of the state
+     * @return the String representation of the state
+     */
     @Override
     public String toString() {
         return Arrays.toString(this.tiles);

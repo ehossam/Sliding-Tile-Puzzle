@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-// How to use:
-// 1. Use NumberBoard copy constructor to dupe human player's board.
-// 2. Create AiPlayer with that NumberBoard
-// 3. EITHER .getNextMove() to get the State.Location of the tile to swap,
-//        then call <NumberBoard>.swapTiles(move.getXIndex(), move.getYIndex()) yourself
-//            (.getNextMove() returns null when .isComplete())
-//    OR .makeMove() and the AiPlayer updates the NumberBoard itself
-// See AiPlayerTest.java for implementation details
-
 /**
  * AI player for number board game
  * create player with number board or set one, then call makeMove to make the player choose and
  * complete a move
+ *
+ * How to use:
+ * 1. Use NumberBoard copy constructor to dupe human player's board.
+ * 2. Create AiPlayer with that NumberBoard
+ * 3. EITHER .getNextMove() to get the State.Location of the tile to swap,
+ *        then call <NumberBoard>.swapTiles(move.getX(), move.getY()) yourself
+ *        (.getNextMove() returns null when .isComplete())
+ *    OR .makeMove() and the AiPlayer updates the NumberBoard itself
+ * See AiPlayerTest.java for examples
  */
 
 public class AiPlayer {
@@ -25,13 +25,13 @@ public class AiPlayer {
     private NumberBoard board;
     private Queue<State> prevStates;
     private int moveCount;
+    private boolean isBlankLast;
 
     /**
      * Default constructor, must setBoard() before use
      */
-    public AiPlayer() {
-        this.maxPrevStates = 10;
-        this.maxDepth = 8;
+    AiPlayer() {
+        this(null, 8);
     }
 
     /**
@@ -39,10 +39,12 @@ public class AiPlayer {
      * @param board the NumberBoard for the AI player to use
      * @param maxDepth the maximum number of moves for the AI to look ahead
      */
-    public AiPlayer(NumberBoard board, int maxDepth) {
+    AiPlayer(NumberBoard board, int maxDepth) {
         this.setBoard(board);
         this.maxPrevStates = 10;
         this.maxDepth = maxDepth;
+        this.prevStates = new LinkedList<>();
+        this.isBlankLast = true;
     }
 
     /**
@@ -58,7 +60,7 @@ public class AiPlayer {
     /**
      * Call to make the AI player find and make a move
      */
-    public void makeMove() {
+    void makeMove() {
         if (this.board == null) {
             throw new IllegalArgumentException("setBoard() has not been called");
         }
@@ -71,13 +73,13 @@ public class AiPlayer {
         if (this.moveCount % 20 == 0) {
             this.maxPrevStates++;
         }
-        board.swapTiles(tileToMove.getXIndex(), tileToMove.getYIndex());
+        board.swapTiles(tileToMove.getX(), tileToMove.getY());
     }
 
     /**
      * Call to get the AI player move
      */
-    public State.Location getNextMove() {
+    State.Location getNextMove() {
         if (this.board == null) {
             throw new IllegalArgumentException("setBoard() has not been called");
         }
@@ -90,7 +92,8 @@ public class AiPlayer {
         if (this.moveCount % 20 == 0) {
             this.maxPrevStates++;
         }
-        return new State.Location(tileToMove.getXIndex(), tileToMove.getYIndex());
+//        return new State.Location(tileToMove.getX(), tileToMove.getY());
+        return tileToMove;
     }
 
     /**
@@ -140,14 +143,6 @@ public class AiPlayer {
                     moveList[i].clear();
                     continue;
                 }
-                /*
-                ArrayList<State> tempStates = new ArrayList<>(moveList[i].get(0).getPossibleActions(i));
-                tempStates.removeAll(prevStates);
-                for (int m = 0; m < 4; m++) {
-                    tempStates.removeAll(moveList[i]);
-                }
-                moveList[i].addAll(tempStates);
-                */
 
                 int min = 0;
                 int max;
@@ -155,21 +150,16 @@ public class AiPlayer {
                     max = moveList[i].size();
                     ArrayList<State> temp = new ArrayList<>();
                     for (int j = min; j < max; j++) {
-                        temp.addAll(moveList[i].get(j).getPossibleActions(-1));
+                        temp.addAll(moveList[i].get(j).getFollowingStates(-1));
                     }
                     min = max;
                     temp.removeAll(prevStates);
-                    /*
-                    for (int m = 0; m < 4; m++) {
-                        temp.removeAll(moveList[i]);
-                    }
-                    */
                     moveList[i].addAll(temp);
                 }
 
                 // find best distance possible from this starting direction
                 for (int x = 0; x < moveList[i].size(); x++) {
-                    int dist = moveList[i].get(x).distance();
+                    int dist = moveList[i].get(x).distance(this.isBlankLast);
                     if (dist < best[i]) {
                         best[i] = dist;
                         bestLocation[i] = x;
