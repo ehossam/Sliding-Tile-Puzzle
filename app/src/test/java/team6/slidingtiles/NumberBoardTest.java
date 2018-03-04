@@ -72,4 +72,26 @@ public class NumberBoardTest {
         assertTrue(successComplete);
     }
 
+    @Test
+    public void copyConstructorIsCorrect() {
+        NumberBoard origBoard = new NumberBoard(true, 1);
+        NumberBoard testBoard = new NumberBoard(origBoard);
+
+        assert(origBoard.equals(testBoard)); // same
+        assertTrue(testBoard.swapTiles(Board.TILE_SIDE - 1, Board.TILE_SIDE - 1));
+        assert(!origBoard.equals(testBoard)); // 1 tile different
+    }
+
+    @Test
+    public void byteArrayCorrect() {
+        NumberBoard test = new NumberBoard(false, 1);
+        test.swapTiles(0, 0);
+        byte[] testBytes = test.getBoardAsBytes();
+        byte[] expBytes = new byte[Board.TILE_COUNT];
+        for (int i = 0; i < Board.TILE_COUNT; i++) {
+            expBytes[i] = (byte)i;
+        }
+        assert(Arrays.equals(testBytes, expBytes));
+    }
+
 }

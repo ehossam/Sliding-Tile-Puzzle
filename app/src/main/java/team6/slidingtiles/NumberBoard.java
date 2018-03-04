@@ -18,6 +18,16 @@ public class NumberBoard extends Board {
     }
 
     /**
+     * NumberBoard copy constructor
+     */
+    NumberBoard(NumberBoard input) {
+        super();
+        this.board = input.getBoard();
+        this.blankX = input.blankX;
+        this.blankY = input.blankY;
+    }
+
+    /**
      * NumberBoard constructor
      * @param isBlankLast If true, the last space on the board will be blank,
      *                     otherwise the first space will be blank.
@@ -55,7 +65,7 @@ public class NumberBoard extends Board {
      * Check if the board is complete/done
      * @return true if the board is complete, false otherwise
      */
-    public boolean isComplete() {
+    boolean isComplete() {
         // blank tile is first
         if (this.board[0][0].equals(Board.BLANK)) {
             for (int i = 1; i < Board.TILE_COUNT; i++) {
@@ -110,5 +120,25 @@ public class NumberBoard extends Board {
         blankX = bundle.getInt(ARG_BLANKX);
         blankY = bundle.getInt(ARG_BLANKY);
     }
+
+    /**
+     * Get the board in byte array representation (for AI)
+     * @return a byte string representing the board current state
+     */
+    byte[] getBoardAsBytes() {
+        byte[] bytes = new byte[Board.TILE_COUNT];
+        for (int i = 0; i < Board.TILE_SIDE; i++) {
+            for (int j = 0; j < Board.TILE_SIDE; j++) {
+                String current = board[i][j];
+                if (current.equals(Board.BLANK)) {
+                    bytes[i * Board.TILE_SIDE + j] = 0;
+                } else {
+                    bytes[i * Board.TILE_SIDE + j] = Byte.valueOf(board[i][j]);
+                }
+            }
+        }
+        return bytes;
+    }
+
 
 }
