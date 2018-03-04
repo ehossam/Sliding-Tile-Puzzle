@@ -138,7 +138,7 @@ abstract class Board implements Parcelable{
         return false;
     }
 
-    /*
+    /**
      * Get X-coordinate of the blank tile
      * @return X-coordinate of the blank tile
      */
