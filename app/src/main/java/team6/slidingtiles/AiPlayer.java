@@ -11,11 +11,12 @@ import java.util.Queue;
  *
  * How to use:
  * 1. Use NumberBoard copy constructor to dupe human player's board.
- * 2. Create AiPlayer with that NumberBoard
- * 3. EITHER .getNextMove() to get the State.Location of the tile to swap,
- *        then call <NumberBoard>.swapTiles(move.getX(), move.getY()) yourself
- *        (.getNextMove() returns null when .isComplete())
- *    OR .makeMove() and the AiPlayer updates the NumberBoard itself
+ * 2. Create AiPlayer with that NumberBoard (AI references _that_ NumberBoard, doesn't copy it)
+ * 3. EITHER theAiPlayer.getNextMove() to get the State.Location of the tile to swap,
+ *        then call theNumberBoard.swapTiles(move.getX(), move.getY()) yourself
+ *        (theAiPlayer.getNextMove() returns null when theNumberBoard.isComplete())
+ *    OR theAiPlayer.makeMove() and the AiPlayer updates the NumberBoard itself
+ * 4. Repeat step 3 at internals (0.5 - 1 sec?)
  * See AiPlayerTest.java for examples
  */
 

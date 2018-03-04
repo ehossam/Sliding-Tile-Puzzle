@@ -1,8 +1,8 @@
 package team6.slidingtiles;
 
 import org.junit.Test;
+
 import java.util.Arrays;
-import static org.junit.Assert.assertEquals;
 
 /**
  * AiPlayer unit tests
@@ -41,8 +41,9 @@ public class AiPlayerTest {
         assert(testBoard.isComplete());
     }
 
+
     @Test
-    public void aiPlayerCompletesRandomBoardInReasonableNumberOfMoves() {
+    public void aiPlayerCompletesRandomBoardWithin100Moves() {
         NumberBoard testBoard = new NumberBoard(true, 5); // = shuffled 25 times
         AiPlayer testPlayer = new AiPlayer(testBoard, 10);
         int count = 0;
@@ -70,8 +71,8 @@ public class AiPlayerTest {
     }
     */
 
+    // Not a unit test. Checking if AI actually finishes every game out 50. Spoiler: it does.
     /*
-    // Not a unit test
     @Test
     public void testQuality() {
         int[] loops = new int[50];

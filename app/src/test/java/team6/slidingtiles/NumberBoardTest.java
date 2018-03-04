@@ -1,7 +1,5 @@
 package team6.slidingtiles;
 
-import android.text.BoringLayout;
-
 import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -72,6 +70,16 @@ public class NumberBoardTest {
         boolean successComplete = test.isComplete();
         assertTrue(successSwap);
         assertTrue(successComplete);
+    }
+
+    @Test
+    public void copyConstructorIsCorrect() {
+        NumberBoard origBoard = new NumberBoard(true, 1);
+        NumberBoard testBoard = new NumberBoard(origBoard);
+
+        assert(origBoard.equals(testBoard)); // same
+        assertTrue(testBoard.swapTiles(Board.TILE_SIDE - 1, Board.TILE_SIDE - 1));
+        assert(!origBoard.equals(testBoard)); // 1 tile different
     }
 
     @Test
