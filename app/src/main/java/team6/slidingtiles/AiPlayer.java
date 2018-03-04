@@ -93,7 +93,6 @@ public class AiPlayer {
         if (this.moveCount % 20 == 0) {
             this.maxPrevStates++;
         }
-//        return new State.Location(tileToMove.getX(), tileToMove.getY());
         return tileToMove;
     }
 
