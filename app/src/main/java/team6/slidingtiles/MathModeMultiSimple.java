@@ -16,30 +16,40 @@ import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by cheesea on 2/10/18.
  */
 
-public class MathMode extends GameMode  {
+public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFinderListener {
     ArrayList<String> boardLayout;
     private static final String ARGS_GAMEBOARD      = "gameBoard";
     private static final String ARGS_BOARDLAYOUT    = "boardLayout";
     private static final String ARGS_BLANKTILE      = "blankTile";
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
+    RoomFinder roomFinder;
 
-
-
-    int score;
-    TextView scoreView;
+    AlertDialog matchingDialog;
+    int myScore;
+    int theirScore;
+    TextView theirScoreView;
+    TextView myScoreView;
     public HashSet<String> ss=new HashSet<>();
+    private Room room;
+    int playerNum;
+    String roomKey;
+    HashSet<String> usedEquations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -51,14 +61,15 @@ public class MathMode extends GameMode  {
             //closing this activity
             finish();
             //start new activity
-            Intent intent = new Intent(MathMode.this, SigninPage.class);
+            Intent intent = new Intent(MathModeMultiSimple.this, SigninPage.class);
             startActivity(intent);
         }
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        score = 0;
-        scoreView = getWindow().getDecorView().findViewById(R.id.my_score);
-        scoreView.setText(Integer.toString(score));
+        databaseReference.addChildEventListener(childEventListener);
+
+        myScoreView = getWindow().getDecorView().findViewById(R.id.my_score);
+        theirScoreView = getWindow().getDecorView().findViewById(R.id.their_score);
 
         ImageButton equationIcon = findViewById(R.id.equation_button);
         equationIcon.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +78,8 @@ public class MathMode extends GameMode  {
                 savedequtions().show();
             }
         });
+
+        newGame();
     }
 
     private void saveScore(){
@@ -76,7 +89,7 @@ public class MathMode extends GameMode  {
         String[] userName = email.split("@");
         String name = userName[0];
 
-        UserScore userScore = new UserScore(name, score);
+        UserScore userScore = new UserScore(name, myScore);
 
         databaseReference.child(databaseReference.push().getKey()).setValue(userScore);
     }
@@ -138,18 +151,15 @@ public class MathMode extends GameMode  {
 
     void newGame(){
         super.newGame();
-        if(score > 0)
+        if(myScore > 0)
           newGameDialog().show();
         else
             createGame();
     }
 
     void createGame(){
-        score = 0;
-        scoreView.setText(Integer.toString(score));
-        gameBoard = new MathBoard(true);
-        SetBoard(gameBoard);
-        super.createGame();
+        matchingDialog();
+
     }
 
     @Override
@@ -163,12 +173,97 @@ public class MathMode extends GameMode  {
 
         Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
         if ((startX == 0 || endX == 0) && startY == endY) {
-            score += ((MathBoard) gameBoard).getScore(startX, startY, false);
+            myScore += ((MathBoard) gameBoard).getScore(startX, startY, false);
         } else if ((startY == 0 || endY == 0) && startX == endX) {
-            score += ((MathBoard) gameBoard).getScore(startX, startY, true);
-        } else return false;
-        scoreView.setText(Integer.toString(score));
+            myScore += ((MathBoard) gameBoard).getScore(startX, startY, true);
+        } else
+            return false;
+        changeScore();
+        usedEquations = ((MathBoard) gameBoard).foundEquations();
         return true;
     }
+
+    public void changeScore(){
+        String playerString;
+        if(playerNum == 1) {
+            room.setP1Score(myScore);
+            playerString = "p1Score";
+        } else {
+            room.setP2Score(myScore);
+            playerString = "p2Score";
+        }
+        databaseReference.child("rooms").child(roomKey).child(playerString).setValue(myScore);
+    }
+
+    public void matchingDialog(){
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+        adBuilder.setMessage("Finding match");
+
+        adBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                finish();
+            }
+        });
+        adBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        });
+
+        adBuilder.setView(findViewById(R.id.matching_dialog_view));
+        matchingDialog = adBuilder.create();
+        matchingDialog.show();
+
+        roomFinder = new RoomFinder(this);
+        roomFinder.getOpenRoom();
+    }
+
+    @Override
+    public void roomFound() {
+        room = roomFinder.getRoom();
+        playerNum = roomFinder.getPlayerNum();
+//        this.gameBoard = new MathBoard(room.getInitBoardState());
+//        SetBoard(this.gameBoard);
+        updateScores();
+        matchingDialog.cancel();
+        super.createGame();
+    }
+
+    public void updateScores(){
+        myScoreView.setText(Integer.toString(myScore));
+        theirScoreView.setText(Integer.toString(theirScore));
+    }
+
+    ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            matchingDialog.dismiss();
+            room = dataSnapshot.getValue(Room.class);
+            updateScores();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
 }
+
 

@@ -3,7 +3,11 @@ package team6.slidingtiles;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
+
 
 /**
  * This class represents the math-based tile board.
@@ -11,7 +15,23 @@ import java.util.HashSet;
 
 public class MathBoard extends Board {
 
+    private static List<String> LEGAL_TILES;
     private HashSet<String> foundEquations;
+
+    static {
+        List<String> temp = new ArrayList<>();
+        temp.add(Board.BLANK);
+        temp.add("=");
+        temp.add("+");
+        temp.add("-");
+        temp.add("*");
+        temp.add("/");
+        for (int i = 0; i < 10; i++) {
+            temp.add(Integer.toString(i));
+        }
+
+        LEGAL_TILES = temp;
+    }
 
     /**
      * MathBoard default constructor
@@ -23,9 +43,45 @@ public class MathBoard extends Board {
     /**
      * MathBoard constructor
      *
+     * @param inBoard initial state to set this MathBoard to (List of tiles as Strings)
+     */
+    MathBoard(List<String> inBoard) {
+        if (inBoard.size() != Board.TILE_COUNT) {
+            throw new RuntimeException("Wrong number of tiles provided. " +
+                    "Received " + inBoard.size() + ", expected " + Board.TILE_COUNT);
+        }
+        if (Collections.frequency(inBoard, Board.BLANK) != 1) {
+            throw new RuntimeException("There should be only one blank tile.");
+        }
+
+        this.board = new String[Board.TILE_SIDE][Board.TILE_SIDE];
+
+        for (int i = 0; i < Board.TILE_COUNT; i++) {
+            String current = inBoard.get(i);
+            if (!MathBoard.LEGAL_TILES.contains(current)) {
+                throw new RuntimeException("Invalid tile glyph provided.");
+            }
+
+            int currentX = i % Board.TILE_SIDE;
+            int currentY = i / Board.TILE_SIDE;
+            if (current.equals(Board.BLANK)) {
+                this.blankX = currentX;
+                this.blankY = currentY;
+            }
+
+            this.board[currentY][currentX] = current;
+        }
+
+        this.foundEquations = new HashSet<>();
+    }
+
+    /**
+     * MathBoard constructor
+     *
      * @param isTest If true, will not shuffle the board, making testing easier
      */
     MathBoard(boolean isTest) {
+
         this.foundEquations = new HashSet<>();
         this.blankX = 3;
         this.blankY = 3;
@@ -49,11 +105,15 @@ public class MathBoard extends Board {
      */
     int getScore(int startX, int startY, boolean isVertical) {
         // make sure starting tiles are on the board, and in first column or row
+
+        /*
         if (startX < 0 || startX >= Board.TILE_SIDE ||
                 startY < 0 || startY >= Board.TILE_SIDE ||
                 (startX != 0 && startY != 0)) {
+            Log.d("startX",Integer.toString(startX));
             throw new IllegalArgumentException("Tile location is off the board");
         }
+        */
 
         StringBuilder equation = new StringBuilder();
 
@@ -88,7 +148,9 @@ public class MathBoard extends Board {
             return  0;
         }
 
+       //String equationNormed = equation.toString();
         String equationNormed = equation.toString();
+
 
         if (!this.foundEquations.contains(equationNormed)) {  // check that equation has not previously been found
             switch (equation.charAt(3)) {  // operator
@@ -126,7 +188,8 @@ public class MathBoard extends Board {
      * Get the set of found equations
      * @return a hash set of equations that have been found
      */
-    private HashSet<String> foundEquations() {
+
+    public HashSet<String> foundEquations() {
         // create deep copy
         HashSet<String> copy = new HashSet<>();
         copy.addAll(this.foundEquations);

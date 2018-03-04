@@ -37,6 +37,19 @@
                 android:padding="10dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/pause_menu" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/equation_button"
+                android:layout_width="?android:attr/actionBarSize"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="11dp"
+                android:background="#000000"
+                android:padding="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/puzzle_equal" />
+
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -79,6 +92,7 @@
             <TextView
 
                 android:id="@+id/their_score"
+                android:gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

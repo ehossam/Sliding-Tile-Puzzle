@@ -21,7 +21,6 @@ abstract class Board implements Parcelable{
 
     String[][] board;
 
-
     int blankX;
     int blankY;
 
@@ -137,6 +136,22 @@ abstract class Board implements Parcelable{
         }
 
         return false;
+    }
+
+    /*
+     * Get X-coordinate of the blank tile
+     * @return X-coordinate of the blank tile
+     */
+    public int getBlankX() {
+        return this.blankX;
+    }
+
+    /**
+     * Get Y-coordinate of the blank tile
+     * @return Y-coordinate of the blank tile
+     */
+    public int getBlankY() {
+        return this.blankY;
     }
 
 }

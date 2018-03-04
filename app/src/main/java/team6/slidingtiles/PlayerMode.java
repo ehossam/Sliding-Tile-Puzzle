@@ -11,6 +11,7 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
     private Button buttonBasic;
     private Button buttonCutthroat;
     private Button buttonSingle;
+    private Button buttonHighScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,10 +21,12 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
         buttonBasic = findViewById(R.id.button_basic);
         buttonCutthroat = findViewById(R.id.button_cutthroat);
         buttonSingle = findViewById(R.id.button_single);
+        buttonHighScore = findViewById(R.id.button_highscore);
 
         buttonBasic.setOnClickListener(this);
         buttonCutthroat.setOnClickListener(this);
         buttonSingle.setOnClickListener(this);
+        buttonHighScore.setOnClickListener(this);
     }
 
     @Override
@@ -35,13 +38,18 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
         }
         if(view == buttonBasic){
             //TODO : redirect to two player basic mode
-//            Intent intent = new Intent(PlayerMode.this,BasicMode.class);
-//            startActivity(intent);
+            Intent intent = new Intent(PlayerMode.this,MathModeMultiSimple.class);
+            startActivity(intent);
         }
         if(view == buttonCutthroat){
             //TODO : redirect to two player cutthroat mode
 //            Intent intent = new Intent(PlayerMode.this,Cutthroat.class);
 //            startActivity(intent);
+        }
+
+        if(view == buttonHighScore){
+            Intent intent = new Intent(PlayerMode.this,HighScore.class);
+            startActivity(intent);
         }
     }
 }
