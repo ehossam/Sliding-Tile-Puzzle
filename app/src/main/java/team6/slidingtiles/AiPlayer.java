@@ -7,15 +7,15 @@ import java.util.Queue;
 /**
  * AI player for number board game
  * create player with number board or set one, then call makeMove to make the player choose and
- * complete a move
- * <p>
+ * complete a move, or call getNextMove to get the tile to swap with the blank
+ *
  * How to use:
  * 1. Use NumberBoard copy constructor to dupe human player's board.
  * 2. Create AiPlayer with that NumberBoard (AI references _that_ NumberBoard, doesn't copy it)
  * 3. EITHER theAiPlayer.getNextMove() to get the State.Location of the tile to swap,
- * then call theNumberBoard.swapTiles(move.getX(), move.getY()) yourself
- * (theAiPlayer.getNextMove() returns null when theNumberBoard.isComplete())
- * OR theAiPlayer.makeMove() and the AiPlayer updates the NumberBoard itself
+ *       then call theNumberBoard.swapTiles(move.getX(), move.getY()) yourself
+ *       (theAiPlayer.getNextMove() returns null when theNumberBoard.isComplete())
+ *    OR theAiPlayer.makeMove() and the AiPlayer updates the NumberBoard itself
  * 4. Repeat step 3 at internals (0.5 - 1 sec?)
  * See AiPlayerTest.java for examples
  */

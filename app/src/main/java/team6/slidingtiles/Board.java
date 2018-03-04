@@ -102,14 +102,6 @@ abstract class Board implements Parcelable{
         return copy;
     }
 
-    public int getBlankX() {
-        return this.blankX;
-    }
-
-    public int getBlankY() {
-        return this.blankY;
-    }
-
     public int describeContents() {
         return 0;
     }
