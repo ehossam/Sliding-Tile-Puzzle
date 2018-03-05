@@ -7,26 +7,26 @@ import java.util.Queue;
 /**
  * AI player for number board game
  * create player with number board or set one, then call makeMove to make the player choose and
- * complete a move
+ * complete a move, or call getNextMove to get the tile to swap with the blank
  *
  * How to use:
  * 1. Use NumberBoard copy constructor to dupe human player's board.
  * 2. Create AiPlayer with that NumberBoard (AI references _that_ NumberBoard, doesn't copy it)
  * 3. EITHER theAiPlayer.getNextMove() to get the State.Location of the tile to swap,
- *        then call theNumberBoard.swapTiles(move.getX(), move.getY()) yourself
- *        (theAiPlayer.getNextMove() returns null when theNumberBoard.isComplete())
+ *       then call theNumberBoard.swapTiles(move.getX(), move.getY()) yourself
+ *       (theAiPlayer.getNextMove() returns null when theNumberBoard.isComplete())
  *    OR theAiPlayer.makeMove() and the AiPlayer updates the NumberBoard itself
  * 4. Repeat step 3 at internals (0.5 - 1 sec?)
  * See AiPlayerTest.java for examples
  */
 
 public class AiPlayer {
-    private int maxPrevStates;
     private int maxDepth;
-    private NumberBoard board;
-    private Queue<State> prevStates;
+    private int maxPrevStates;
     private int moveCount;
     private boolean isBlankLast;
+    private NumberBoard board;
+    private Queue<State> prevStates;
 
     /**
      * Default constructor, must setBoard() before use
@@ -37,7 +37,8 @@ public class AiPlayer {
 
     /**
      * Preferred constructor
-     * @param board the NumberBoard for the AI player to use
+     *
+     * @param board    the NumberBoard for the AI player to use
      * @param maxDepth the maximum number of moves for the AI to look ahead
      */
     AiPlayer(NumberBoard board, int maxDepth) {
@@ -50,6 +51,7 @@ public class AiPlayer {
 
     /**
      * Set the NumberBoard for the AI player to use
+     *
      * @param board the NumberBoard for the AI player to use
      */
     public void setBoard(NumberBoard board) {
@@ -79,6 +81,8 @@ public class AiPlayer {
 
     /**
      * Call to get the AI player move
+     *
+     * @return Location of the tile to swap with the blank
      */
     State.Location getNextMove() {
         if (this.board == null) {
@@ -98,8 +102,8 @@ public class AiPlayer {
 
     /**
      * Returns the best available move (tile Location) for the AI player to choose
-     * The AI player looks 3 moves ahead to decide the best option. Highly randomized boards will
-     * make the AI seem very stupid.
+     * The AI player looks maxDepth moves ahead to decide the best option.
+     *
      * @return Location of the tile to swap with the blank
      */
     @SuppressWarnings("unchecked")
@@ -114,7 +118,7 @@ public class AiPlayer {
         }
         prevStates.add(current);
 
-        ArrayList<State>[] moveList = (ArrayList<State>[])new ArrayList[4];
+        ArrayList<State>[] moveList = (ArrayList<State>[]) new ArrayList[4];
         for (int i = 0; i < 4; i++) {
             moveList[i] = new ArrayList<>();
         }
@@ -170,7 +174,7 @@ public class AiPlayer {
 
         // Find the best direction to go
         int theBest = 0;
-        for (int i = 1; i < 4; i++){
+        for (int i = 1; i < 4; i++) {
             if (best[i] < best[theBest]) {
                 theBest = i;
             } else if (best[i] == best[theBest] && bestLocation[i] < bestLocation[theBest]) {
