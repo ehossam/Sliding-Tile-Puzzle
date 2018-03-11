@@ -17,13 +17,7 @@ public class Room {
     String key;
 
     public Room(){
-        isOpen  = true;
-        p1Score = 0;
-        p2Score = 0;
-        time    = 0;
-        usedEquations = new ArrayList<>();
-        initBoardState = new ArrayList<>();
- //       key = null;
+
     }
 
     public Room(List<String> initBoardState){

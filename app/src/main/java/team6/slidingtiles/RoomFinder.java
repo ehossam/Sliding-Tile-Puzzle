@@ -1,8 +1,11 @@
 package team6.slidingtiles;
 
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,32 +25,47 @@ import java.util.Queue;
  */
 
 public class RoomFinder {
-    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
     private RoomFinderListener roomFinderListener;
+    boolean flag = false;
+
     Room room;
     int playerNum;
     public String id;
 
     public RoomFinder(MathModeMultiSimple mathModeMultiSimple){
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("rooms");
         roomFinderListener = mathModeMultiSimple;
+        Log.d("In Room Finder main", ": ");
     }
 
     public void getOpenRoom(){
-        Query findOpenRoom = databaseReference.child("rooms").
+        Log.d("In get open room", ": ");
+        Query findOpenRoom = databaseReference.
                 orderByChild("isOpen").equalTo(true).limitToFirst(1);
+        Log.d("query : ", findOpenRoom.toString());
+
         findOpenRoom.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    room  = dataSnapshot.getValue(DataSnapshot.class).getValue(Room.class);
+                Log.d("Inside listener", ": going");
 
-                    Log.d("Room class bug", dataSnapshot.getKey());
+                if(dataSnapshot.exists()) {
+                    flag = true;
+                    Log.d("room result", String.valueOf(dataSnapshot.getValue()));
+                    if(dataSnapshot.getChildren().iterator().hasNext())
+                        room = dataSnapshot.getChildren().iterator().next().getValue(Room.class);
+
+                    Log.d("room result", String.valueOf(room));
+
+                    Log.d("key value in listener", room.getKey());
                     playerNum = 2;
-                    databaseReference.child("rooms").child(room.getKey()).child("isOpen").setValue(false);
+                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
                     roomFinderListener.roomFound();
                 } else {
+                    Log.d("creating open room", ":in else part");
+
                     createOpenRoom();
                 }
             }
@@ -57,19 +75,23 @@ public class RoomFinder {
                 Log.d("RoomFinder", "getOpenRoom Cancelled!");
             }
         });
+
     }
 
-    public void createOpenRoom(){
+    public Room createOpenRoom(){
+        Log.d("Room finder yayy", "creating open room");
         MathBoard mathBoard = new MathBoard(false);
         List<String> mathBoardList = new ArrayList<>();
         for (int i = 0; i < mathBoard.getBoard().length; i++){
             mathBoardList.addAll(Arrays.asList(mathBoard.getBoard()[i]));
         }
         Room room  = new Room(mathBoardList);
-        String key = databaseReference.push().getKey();
-        room.setKey(key);
-        databaseReference.child("rooms").child(key).setValue(room);
+        String key1 = databaseReference.push().getKey();
+        room.setKey(key1);
+        Log.d("key print in create", room.getKey());
+        databaseReference.child(key1).setValue(room);
         playerNum = 1;
+        return room;
     }
 
     interface RoomFinderListener{

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -79,8 +80,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             }
         });
 
-        newGame();
-    }
+          }
 
     private void saveScore(){
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -196,13 +196,14 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     }
 
     public void matchingDialog(){
+        Log.d(" matchingdialog", ": ");
         AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
         adBuilder.setMessage("Finding match");
 
         adBuilder.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                finish();
+//                finish();
             }
         });
         adBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -216,15 +217,19 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         matchingDialog.show();
 
         roomFinder = new RoomFinder(this);
+        Log.d(" roomfinder.getopenroom", ": ");
+
         roomFinder.getOpenRoom();
     }
 
     @Override
     public void roomFound() {
+        Log.d("Going to get room", "roomFound: ");
+
         room = roomFinder.getRoom();
         playerNum = roomFinder.getPlayerNum();
-//        this.gameBoard = new MathBoard(room.getInitBoardState());
-//        SetBoard(this.gameBoard);
+        this.gameBoard = new MathBoard(room.getInitBoardState());
+        SetBoard(this.gameBoard);
         updateScores();
         matchingDialog.cancel();
         super.createGame();

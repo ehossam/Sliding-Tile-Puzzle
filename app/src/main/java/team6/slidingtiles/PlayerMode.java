@@ -3,6 +3,7 @@ package team6.slidingtiles;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -37,6 +38,7 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
             startActivity(intent);
         }
         if(view == buttonBasic){
+
             //TODO : redirect to two player basic mode
             Intent intent = new Intent(PlayerMode.this,MathModeMultiSimple.class);
             startActivity(intent);
