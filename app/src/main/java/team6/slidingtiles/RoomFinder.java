@@ -86,7 +86,7 @@ public class RoomFinder {
         for (int i = 0; i < mathBoard.getBoard().length; i++){
             mathBoardList.addAll(Arrays.asList(mathBoard.getBoard()[i]));
         }
-        Room room  = new Room(mathBoardList);
+        room  = new Room(mathBoardList);
         String key1 = databaseReference.push().getKey();
         room.setKey(key1);
         Log.d("key print in create", room.getKey());
