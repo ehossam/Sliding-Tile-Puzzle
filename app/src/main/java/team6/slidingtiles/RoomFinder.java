@@ -27,7 +27,7 @@ import java.util.Queue;
 public class RoomFinder {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private RoomFinderListener roomFinderListener;
+    private MathModeMultiSimple mathModeMultiSimple;
     boolean flag = false;
 
     Room room;
@@ -36,7 +36,8 @@ public class RoomFinder {
 
     public RoomFinder(MathModeMultiSimple mathModeMultiSimple){
         databaseReference = FirebaseDatabase.getInstance().getReference().child("rooms");
-        roomFinderListener = mathModeMultiSimple;
+        this.mathModeMultiSimple = mathModeMultiSimple;
+
         Log.d("In Room Finder main", ": ");
     }
 
@@ -45,7 +46,6 @@ public class RoomFinder {
         Query findOpenRoom = databaseReference.
                 orderByChild("isOpen").equalTo(true).limitToFirst(1);
         Log.d("query : ", findOpenRoom.toString());
-
         findOpenRoom.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -62,10 +62,11 @@ public class RoomFinder {
                     Log.d("key value in listener", room.getKey());
                     playerNum = 2;
                     databaseReference.child(room.getKey()).child("isOpen").setValue(false);
-                    roomFinderListener.roomFound();
+                    databaseReference.child(room.getKey()).getRef().
+                            addChildEventListener(mathModeMultiSimple.childEventListener);
+                    mathModeMultiSimple.roomFound();
                 } else {
                     Log.d("creating open room", ":in else part");
-
                     createOpenRoom();
                 }
             }
@@ -78,7 +79,7 @@ public class RoomFinder {
 
     }
 
-    public Room createOpenRoom(){
+    public void createOpenRoom(){
         Log.d("Room finder yayy", "creating open room");
         MathBoard mathBoard = new MathBoard(false);
         List<String> mathBoardList = new ArrayList<>();
@@ -90,8 +91,9 @@ public class RoomFinder {
         room.setKey(key1);
         Log.d("key print in create", room.getKey());
         databaseReference.child(key1).setValue(room);
+        databaseReference.child(room.getKey()).getRef().
+                addChildEventListener(mathModeMultiSimple.childEventListener);
         playerNum = 1;
-        return room;
     }
 
     interface RoomFinderListener{

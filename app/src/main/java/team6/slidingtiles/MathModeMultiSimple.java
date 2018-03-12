@@ -67,7 +67,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         }
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.addChildEventListener(childEventListener);
 
         myScoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         theirScoreView = getWindow().getDecorView().findViewById(R.id.their_score);
@@ -248,9 +247,17 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            matchingDialog.dismiss();
-            room = dataSnapshot.getValue(Room.class);
-            updateScores();
+
+            String key = dataSnapshot.getKey();
+            Log.d("onChildChanged", "onChildChanged: " + key);
+            if(key.equals("p1Score") || key.equals("p2Score")) {
+                matchingDialog.dismiss();
+                room = dataSnapshot.getValue(Room.class);
+                updateScores();
+            }
+
+            if(key.equals("isOpen"))
+                roomFound();
         }
 
         @Override
