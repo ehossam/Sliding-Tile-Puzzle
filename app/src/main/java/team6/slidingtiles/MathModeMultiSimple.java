@@ -191,7 +191,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             room.setP2Score(myScore);
             playerString = "p2Score";
         }
-        databaseReference.child("rooms").child(roomKey).child(playerString).setValue(myScore);
+        databaseReference.child("rooms").child(room.getKey()).child(playerString).setValue(myScore);
     }
 
     public void matchingDialog(){
@@ -248,11 +248,23 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
+            matchingDialog.dismiss();
             String key = dataSnapshot.getKey();
             Log.d("onChildChanged", "onChildChanged: " + key);
-            if(key.equals("p1Score") || key.equals("p2Score")) {
-                matchingDialog.dismiss();
-                room = dataSnapshot.getValue(Room.class);
+            if(key.equals("p1Score")){
+                if(playerNum == 1){
+                    myScore = dataSnapshot.getValue(Integer.class);
+                } else {
+                    theirScore = dataSnapshot.getValue(Integer.class);
+                }
+                updateScores();
+            }
+            if(key.equals("p2Score")) {
+                if(playerNum == 1){
+                    theirScore = dataSnapshot.getValue(Integer.class);
+                } else {
+                    myScore = dataSnapshot.getValue(Integer.class);
+                }
                 updateScores();
             }
 
