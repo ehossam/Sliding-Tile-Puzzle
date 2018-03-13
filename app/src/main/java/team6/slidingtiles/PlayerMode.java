@@ -19,6 +19,23 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
     private CheckBox checkbox1,checkbox2,checkbox3;
 
     @Override
+    protected void onResume() {
+        if(checkbox1.isChecked()){
+            checkbox1.setChecked(false);
+            checkbox1.setSelected(false);
+        }
+        if(checkbox2.isChecked()){
+            checkbox2.setChecked(false);
+            checkbox2.setSelected(false);
+        }
+        if(checkbox3.isChecked()){
+            checkbox3.setChecked(false);
+            checkbox3.setSelected(false);
+        }
+        super.onResume();
+            }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_mode);
