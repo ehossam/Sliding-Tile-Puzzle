@@ -1,47 +1,23 @@
 package team6.slidingtiles;
 
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-/**
- * Created by hsamanoudy on 3/11/2018.
- */
 
-public class AiMode extends GameMode {
-    AiPlayer Aiplayer;
-    //= new ((NumberMode) gameBoard, );
+public class AiNumMode extends AiMode2 implements BoardFragment.SelectionHandler {
+
     private static final String ARGS_GAMEBOARD      = "gameBoard";
     private static final String ARGS_BOARDLAYOUT    = "boardLayout";
     private static final String ARGS_BLANKTILE      = "blankTile";
     ArrayList<String> boardLayout;
     int difficulty;
 
-
-    /**
-     * onCreate for numbermode, is called when the activity is created
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        gameBoard = null;
+        gameBoard1 = null;
         difficulty = 0;
         super.onCreate(savedInstanceState);
     }
@@ -53,7 +29,7 @@ public class AiMode extends GameMode {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putParcelable(ARGS_GAMEBOARD, gameBoard);
+        savedInstanceState.putParcelable(ARGS_GAMEBOARD, gameBoard1);
         savedInstanceState.putStringArrayList(ARGS_BOARDLAYOUT, boardLayout);
         savedInstanceState.putInt(ARGS_BLANKTILE, blankTile);
     }
@@ -65,11 +41,10 @@ public class AiMode extends GameMode {
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        gameBoard   = savedInstanceState.getParcelable(ARGS_GAMEBOARD);
+        gameBoard1   = savedInstanceState.getParcelable(ARGS_GAMEBOARD);
         boardLayout = savedInstanceState.getStringArrayList(ARGS_BOARDLAYOUT);
         blankTile   = savedInstanceState.getInt(ARGS_BLANKTILE);
     }
-
     void newGame() {
         super.newGame();
         newGameDialog().show();
@@ -80,13 +55,9 @@ public class AiMode extends GameMode {
      * and creates a board of the desired type.
      */
     void createGame(){
-        gameBoard = new NumberBoard(true, difficulty);
-        SetBoard(gameBoard);
-        Aiplayer= new AiPlayer((NumberBoard) gameBoard,difficulty);
-        //AiPlayer.setBoard():
+        gameBoard1 = new NumberBoard(true, difficulty);
+        SetBoard(gameBoard1);
         super.createGame();
-
-
     }
 
     /**
@@ -124,14 +95,11 @@ public class AiMode extends GameMode {
      * @param pos is the position of the tile being swapped with the blank tile
      */
     boolean moveTile(int pos) {
-        //boolean success = super.moveTile(pos);
-        Aiplayer.makeMove();
-        if(((NumberBoard)gameBoard).isComplete())
+        boolean success = super.moveTile(pos);
+        if(((NumberBoard)gameBoard1).isComplete())
             complete();
-       return true;
-       // return success;
+        return success;
     }
-
 
     /**
      * checks if the board is complete, which means that the user has won
@@ -140,7 +108,7 @@ public class AiMode extends GameMode {
     void complete(){
         onPause();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("AI Wins!");
+        builder.setTitle("You Win!");
         CharSequence options[] = new CharSequence[]{"New game", "Quit"};
 
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -161,3 +129,4 @@ public class AiMode extends GameMode {
         builder.show();
     }
 }
+

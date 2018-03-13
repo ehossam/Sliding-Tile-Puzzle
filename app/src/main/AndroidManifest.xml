@@ -27,7 +27,7 @@
         <activity android:name=".HighScore" />
         <activity android:name=".PlayerMode" />
         <activity android:name=".PlayNumMode" />
-        <activity android:name=".AiMode"></activity>
+        <activity android:name=".AiNumMode"></activity>
     </application>
 
 </manifest>

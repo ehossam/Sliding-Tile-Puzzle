@@ -16,7 +16,7 @@ public class PlayNumMode extends AppCompatActivity {
         aibutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PlayNumMode.this,AiMode.class);
+                Intent intent = new Intent(PlayNumMode.this,AiNumMode.class);
                 startActivity(intent);
             }
         });
