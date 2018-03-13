@@ -12,10 +12,9 @@ public class Room {
     private int p1Score;
     private int p2Score;
     private List<String> initBoardState;
-    private List<String> usedEquations;
+    private String lastUsed;
     private boolean roundStarted;
     private String key;
-    private String lastMove;
 
     public Room(){
 
@@ -27,7 +26,7 @@ public class Room {
         p2Score = 0;
         roundStarted    = false;
   //      key = null;
-        usedEquations = new ArrayList<>();
+        lastUsed = "No equations";
 
         this.initBoardState = initBoardState;
     }
@@ -46,8 +45,8 @@ public class Room {
         this.p2Score = p2Score;
     }
 
-    public void setUsedEquations(List<String> usedEquations) {
-        this.usedEquations = usedEquations;
+    public void setLastUsed(String lastUsed) {
+        this.lastUsed = lastUsed;
     }
 
     public void setInitBoardState(List<String> initBoardState) {
@@ -74,8 +73,8 @@ public class Room {
         return p2Score;
     }
 
-    public List<String> getUsedEquations() {
-        return usedEquations;
+    public String getLastUsed() {
+        return lastUsed;
     }
 
     public List<String> getInitBoardState() {

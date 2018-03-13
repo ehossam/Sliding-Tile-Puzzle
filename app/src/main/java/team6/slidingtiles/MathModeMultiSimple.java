@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -49,6 +50,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     RoomFinder roomFinder;
 
     AlertDialog matchingDialog;
+    TextView usedEquationText;
     int myScore;
     int theirScore;
     TextView theirScoreView;
@@ -56,7 +58,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     public LinkedHashSet<String> ss=new LinkedHashSet<>();
     private Room room;
     int playerNum;
-    String roomKey;
+    String lastUsed;
     HashSet<String> usedEquations;
 
     @Override
@@ -77,10 +79,10 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         myScoreView = getWindow().getDecorView().findViewById(R.id.my_score);
+        //myScoreView.setText(Integer.toString(0));
         theirScoreView = getWindow().getDecorView().findViewById(R.id.their_score);
-
-        ImageButton equationIcon = findViewById(R.id.equation_button);
-        equationIcon.setOnClickListener(new View.OnClickListener() {
+        usedEquationText = getWindow().getDecorView().findViewById(R.id.center_button);
+        usedEquationText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view){
                 savedequtions().show();
@@ -195,8 +197,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             return false;
         changeScore();
         usedEquations = ((MathBoard) gameBoard).foundEquations();
-        databaseReference.child("rooms").child(room.getKey()).child("lastMove").
-                setValue(usedEquations.toArray()[usedEquations.size() - 1]);
         return true;
     }
 
@@ -253,8 +253,11 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     }
 
     public void updateScores(){
-        myScoreView.setText(Integer.toString(myScore));
-        theirScoreView.setText(Integer.toString(theirScore));
+        myScoreView.setText("You: " + Integer.toString(myScore));
+        theirScoreView.setText("Them: " + Integer.toString(theirScore));
+        if(lastUsed != null)
+            usedEquationText.setText("You played:\n"+lastUsed);
+
     }
 
     ChildEventListener childEventListener = new ChildEventListener() {
@@ -271,6 +274,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                 case "p1Score":
                     if (playerNum == 1) {
                         myScore =  dataSnapshot.getValue(Integer.class);
+                        lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
                     } else {
                         theirScore =  dataSnapshot.getValue(Integer.class);
                     }
@@ -282,6 +286,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                         theirScore = dataSnapshot.getValue(Integer.class);
                     } else {
                         myScore = dataSnapshot.getValue(Integer.class);
+                        lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
                     }
                     updateScores();
                     break;
@@ -297,9 +302,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                     MathModeMultiSimple.super.createGame();
                     matchingDialog.dismiss();
                     break;
-                case "usedEquations":
-                    ((MathBoard) gameBoard).insertNoScoreEquation(
-                            dataSnapshot.getValue(String.class));
 
             }
         }
