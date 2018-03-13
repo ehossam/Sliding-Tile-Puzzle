@@ -125,4 +125,18 @@ public class MathBoardTest {
         assertEquals(test.getBlankX(), 1);
         assertEquals(test.getBlankY(), 2);
     }
+
+    @Test
+    public void equationsInsertedWithNoScoreCorrectly() {
+        MathBoard test = new MathBoard(true);
+        assertEquals(8, test.getScore(2, 0, true));
+        assertEquals(3, test.getScore(0,2, false));
+        assertTrue(test.insertNoScoreEquation("8=4*2")); // already exists
+        assertTrue(test.insertNoScoreEquation("3=1+2")); // already exists
+        assertTrue(test.insertNoScoreEquation("4=7-3"));
+        assertTrue(test.insertNoScoreEquation("3=9/3"));
+        assertTrue(test.insertNoScoreEquation("6=2*3"));
+        assertTrue(!test.insertNoScoreEquation("2*3=6"));
+        assertTrue(!test.insertNoScoreEquation("7-3=4"));
+    }
 }
