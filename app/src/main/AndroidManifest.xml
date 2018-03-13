@@ -21,11 +21,13 @@
         <activity android:name=".NumberMode" />
         <activity android:name=".RegisterPage" />
         <activity android:name=".SigninPage" />
-        <activity android:name=".MathMode"/>
-        <activity android:name=".MathModeMultiSimple"/>
+        <activity android:name=".MathMode" />
+        <activity android:name=".MathModeMultiSimple" />
         <activity android:name=".SaveScore" />
-        <activity android:name=".HighScore"/>
-        <activity android:name=".PlayerMode"/>
+        <activity android:name=".HighScore" />
+        <activity android:name=".PlayerMode" />
+        <activity android:name=".PlayNumMode" />
+        <activity android:name=".AiNumMode"></activity>
     </application>
 
 </manifest>
