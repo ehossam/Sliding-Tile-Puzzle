@@ -7,12 +7,13 @@ import android.os.Bundle;
 
 import java.util.ArrayList;
 
-public class AiNumMode extends AiMode2 implements BoardFragment.SelectionHandler {
+public class AiNumMode extends AiMode2 implements AiBoardFragment.SelectionHandler {
 
     private static final String ARGS_GAMEBOARD      = "gameBoard";
     private static final String ARGS_BOARDLAYOUT    = "boardLayout";
     private static final String ARGS_BLANKTILE      = "blankTile";
     ArrayList<String> boardLayout;
+    AiPlayer testPlayer = new AiPlayer();
     int difficulty;
 
     @Override
@@ -57,7 +58,17 @@ public class AiNumMode extends AiMode2 implements BoardFragment.SelectionHandler
     void createGame(){
         gameBoard1 = new NumberBoard(true, difficulty);
         SetBoard(gameBoard1);
+        gameBoard2=new NumberBoard(true, difficulty);
+        testPlayer.setBoard(gameBoard2);
         super.createGame();
+        //int count = 0;
+        /*
+        while (!gameBoard2.isComplete() && count++ < 100) {
+            testPlayer.makeMove();
+        }
+
+        assert(gameBoard2.isComplete());
+        */
     }
 
     /**
@@ -96,8 +107,14 @@ public class AiNumMode extends AiMode2 implements BoardFragment.SelectionHandler
      */
     boolean moveTile(int pos) {
         boolean success = super.moveTile(pos);
-        if(((NumberBoard)gameBoard1).isComplete())
+        if((gameBoard1).isComplete())
             complete();
+       // testPlayer.makeMove();
+        State.Location move = testPlayer.getNextMove();
+        gameBoard2.swapTiles(move.getX(), move.getY());
+        reflect();
+        if((gameBoard2).isComplete())
+            complete_2();
         return success;
     }
 
@@ -124,6 +141,31 @@ public class AiNumMode extends AiMode2 implements BoardFragment.SelectionHandler
                 }
             }
         });
+
+        builder.setCancelable(false);
+        builder.show();
+    }
+
+    void complete_2(){
+        onPause();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("AI Wins!");
+        CharSequence options[] = new CharSequence[]{"New game", "Quit"};
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i){
+                    case 0:
+                        newGame();
+                        break;
+                    case 1:
+                        finish();
+                        break;
+                }
+            }
+        });
+
 
         builder.setCancelable(false);
         builder.show();

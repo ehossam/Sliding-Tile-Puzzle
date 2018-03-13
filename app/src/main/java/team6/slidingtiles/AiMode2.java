@@ -19,14 +19,15 @@ import java.util.Arrays;
 
 public abstract class AiMode2 extends AppCompatActivity implements BoardFragment.SelectionHandler{
     ArrayList<String> boardLayout;
+    ArrayList<String> boardLayout2;
     AiBoardFragment   boardFragment1;
     AiBoardFragment   boardFragment2;
 
     Chronometer     timer;
     int     blankTile;
     long    timePaused;
-    Board gameBoard1;
-    Board gameBoard2;
+    NumberBoard gameBoard1;
+    NumberBoard gameBoard2;
 
 
     private static final String ARGS_GAMEBOARD      = "gameBoard";
@@ -66,6 +67,8 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
         boardFragment2 = AiBoardFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragmentFrame2, boardFragment2).commit();
+
+
     }
 
 
@@ -140,6 +143,7 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
             if (boardLayout.get(i).compareTo(" ")==0)
                 blankTile = i;
         boardFragment1.setBoardLayout(boardLayout);
+       // boardFragment2.setBoardLayout(boardLayout);
     }
 
 
@@ -204,6 +208,11 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
             return true;
         }
         return false;
+    }
+
+    void reflect(){
+        boardLayout2 = convertDimm(gameBoard2.getBoard());
+        boardFragment2.setBoardLayout(boardLayout2);
     }
     /**
      * checks if the board is complete, which means that the user has won
