@@ -27,9 +27,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -50,7 +53,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     int theirScore;
     TextView theirScoreView;
     TextView myScoreView;
-    public HashSet<String> ss=new HashSet<>();
+    public LinkedHashSet<String> ss=new LinkedHashSet<>();
     private Room room;
     int playerNum;
     String roomKey;
@@ -144,7 +147,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     AlertDialog.Builder savedequtions() {
        final AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
 
-        ss=(HashSet)(((MathBoard) gameBoard).foundEquations()).clone();
+        ss=(LinkedHashSet)(((MathBoard) gameBoard).foundEquations()).clone();
         Iterator iterator = ss.iterator();
         String msg="";
         while (iterator.hasNext()) {
@@ -192,6 +195,8 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             return false;
         changeScore();
         usedEquations = ((MathBoard) gameBoard).foundEquations();
+        databaseReference.child("rooms").child(room.getKey()).child("lastMove").
+                setValue(usedEquations.toArray()[usedEquations.size() - 1]);
         return true;
     }
 
@@ -245,8 +250,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         this.gameBoard = new MathBoard(room.getInitBoardState());
         SetBoard(this.gameBoard);
         updateScores();
-        matchingDialog.cancel();
-        super.createGame();
     }
 
     public void updateScores(){
@@ -261,8 +264,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            matchingDialog.dismiss();
             String key = dataSnapshot.getKey();
             Object value = dataSnapshot.getValue();
             Log.d("onChildChanged", "onChildChanged: " + key);
@@ -288,9 +289,18 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                 case "isOpen":
                     if (!dataSnapshot.getValue(Boolean.class)) {
                         roomFound();
-                        matchingDialog.dismiss();
-                        break;
+                        databaseReference.child("rooms").child(room.getKey()).
+                                child("roundStarted").setValue(true);
                     }
+                    break;
+                case "roundStarted":
+                    MathModeMultiSimple.super.createGame();
+                    matchingDialog.dismiss();
+                    break;
+                case "usedEquations":
+                    ((MathBoard) gameBoard).insertNoScoreEquation(
+                            dataSnapshot.getValue(String.class));
+
             }
         }
 

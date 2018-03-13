@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class MathBoard extends Board {
 
     private static List<String> LEGAL_TILES;
-    private HashSet<String> foundEquations;
+    private LinkedHashSet<String> foundEquations;
 
     static {
         List<String> temp = new ArrayList<>();
@@ -72,7 +73,7 @@ public class MathBoard extends Board {
             this.board[currentY][currentX] = current;
         }
 
-        this.foundEquations = new HashSet<>();
+        this.foundEquations = new LinkedHashSet<>();
     }
 
     /**
@@ -82,7 +83,7 @@ public class MathBoard extends Board {
      */
     MathBoard(boolean isTest) {
 
-        this.foundEquations = new HashSet<>();
+        this.foundEquations = new LinkedHashSet<>();
         this.blankX = 3;
         this.blankY = 3;
         this.board = new String[][]{{"6", "5", "4", "-", "9"},
@@ -189,9 +190,9 @@ public class MathBoard extends Board {
      * @return a hash set of equations that have been found
      */
 
-    public HashSet<String> foundEquations() {
+    public LinkedHashSet<String> foundEquations() {
         // create deep copy
-        HashSet<String> copy = new HashSet<>();
+        LinkedHashSet<String> copy = new LinkedHashSet<>();
         copy.addAll(this.foundEquations);
         return copy;
     }

@@ -1,5 +1,6 @@
 package team6.slidingtiles;
 
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
@@ -56,12 +57,12 @@ public class RoomFinder {
                     Log.d("room result", String.valueOf(dataSnapshot.getValue()));
                     if(dataSnapshot.getChildren().iterator().hasNext())
                         room = dataSnapshot.getChildren().iterator().next().getValue(Room.class);
+                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
 
                     Log.d("room result", String.valueOf(room));
 
                     Log.d("key value in listener", room.getKey());
                     playerNum = 2;
-                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
                     databaseReference.child(room.getKey()).getRef().
                             addChildEventListener(mathModeMultiSimple.childEventListener);
                     mathModeMultiSimple.roomFound();

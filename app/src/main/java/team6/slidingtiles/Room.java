@@ -13,8 +13,9 @@ public class Room {
     private int p2Score;
     private List<String> initBoardState;
     private List<String> usedEquations;
-    long time;
-    String key;
+    private boolean roundStarted;
+    private String key;
+    private String lastMove;
 
     public Room(){
 
@@ -24,7 +25,7 @@ public class Room {
         isOpen  = true;
         p1Score = 0;
         p2Score = 0;
-        time    = 0;
+        roundStarted    = false;
   //      key = null;
         usedEquations = new ArrayList<>();
 
@@ -53,8 +54,8 @@ public class Room {
         this.initBoardState = initBoardState;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setRoundStarted(boolean roundStarted) {
+        this.roundStarted = roundStarted;
     }
 
     public void setIsOpen(Boolean open) {
@@ -87,8 +88,8 @@ public class Room {
 
 
 
-    public long getTime() {
-        return time;
+    public boolean getRoundStarted() {
+        return roundStarted;
     }
 
     public void setKey(String key){
