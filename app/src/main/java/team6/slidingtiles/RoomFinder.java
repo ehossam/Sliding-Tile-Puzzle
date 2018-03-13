@@ -96,6 +96,12 @@ public class RoomFinder {
         playerNum = 1;
     }
 
+    public void removeRoom(){
+        databaseReference.child(room.getKey()).getRef().
+                removeEventListener(mathModeMultiSimple.childEventListener);
+        databaseReference.child(room.getKey()).removeValue();
+    }
+
     interface RoomFinderListener{
         public void roomFound();
     }

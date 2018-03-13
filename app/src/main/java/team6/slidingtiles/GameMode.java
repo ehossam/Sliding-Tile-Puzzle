@@ -57,6 +57,12 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
                 .add(R.id.fragmentFrame, boardFragment).commit();
     }
 
+    @Override
+    protected void onStop() {
+        getSupportFragmentManager().beginTransaction()
+                .remove(boardFragment);
+        super.onStop();
+    }
 
     /**
      * onResume is called when the activity becomes visible again

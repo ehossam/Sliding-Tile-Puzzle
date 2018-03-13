@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -22,8 +24,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -78,8 +82,16 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                 savedequtions().show();
             }
         });
+    }
 
-          }
+    @Override
+    protected void onStop() {
+        if(room != null) {
+            databaseReference.child("rooms").child(room.getKey()).removeEventListener(childEventListener);
+            databaseReference.child("rooms").child(room.getKey()).child("isOpen").removeValue();
+        }
+        super.onStop();
+    }
 
     private void saveScore(){
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -207,12 +219,14 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         });
         adBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                roomFinder.removeRoom();
                 finish();
             }
         });
 
         adBuilder.setView(findViewById(R.id.matching_dialog_view));
         matchingDialog = adBuilder.create();
+        matchingDialog.setCancelable(false);
         matchingDialog.show();
 
         roomFinder = new RoomFinder(this);
@@ -242,7 +256,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     ChildEventListener childEventListener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
         }
 
         @Override
@@ -250,31 +263,53 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
             matchingDialog.dismiss();
             String key = dataSnapshot.getKey();
+            Object value = dataSnapshot.getValue();
             Log.d("onChildChanged", "onChildChanged: " + key);
-            if(key.equals("p1Score")){
-                if(playerNum == 1){
-                    myScore = dataSnapshot.getValue(Integer.class);
-                } else {
-                    theirScore = dataSnapshot.getValue(Integer.class);
-                }
-                updateScores();
-            }
-            if(key.equals("p2Score")) {
-                if(playerNum == 1){
-                    theirScore = dataSnapshot.getValue(Integer.class);
-                } else {
-                    myScore = dataSnapshot.getValue(Integer.class);
-                }
-                updateScores();
-            }
+            switch (key) {
+                case "p1score":
+                    if (playerNum == 1) {
+                        myScore =  (Integer) value;
+                    } else {
+                        theirScore =  (Integer) value;
+                    }
+                    updateScores();
+                    break;
 
-            if(key.equals("isOpen"))
-                roomFound();
+                case "p2score":
+                    if (playerNum == 1) {
+                        theirScore = (Integer) value;
+                    } else {
+                        myScore = (Integer) value;
+                    }
+                    updateScores();
+                    break;
+
+                case "isOpen":
+                    if (!((Boolean) value)) {
+                        roomFound();
+                        matchingDialog.dismiss();
+                        break;
+                    }
+            }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+            if(dataSnapshot.getKey().equals("isOpen")) {
+                AlertDialog playerLeftAlert = new AlertDialog.Builder(
+                        MathModeMultiSimple.this).create();
+                playerLeftAlert.setMessage("The other player left the room.");
+                playerLeftAlert.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                databaseReference.child("rooms").child(room.getKey()).removeValue();
+                                finish();
+                            }
+                        });
+                playerLeftAlert.setCancelable(false);
+                playerLeftAlert.show();
+            }
         }
 
         @Override
