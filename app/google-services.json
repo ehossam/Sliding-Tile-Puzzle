@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "196035147177",
+    "firebase_url": "https://sliding-tile-puzzle.firebaseio.com",
+    "project_id": "sliding-tile-puzzle",
+    "storage_bucket": "sliding-tile-puzzle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196035147177:android:5059ff6d28f371d7",
+        "android_client_info": {
+          "package_name": "team6.slidingtiles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "196035147177-3spkotbdbor0fsqqtv64s9u3jgbuce5i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "team6.slidingtiles",
+            "certificate_hash": "498082013a119bdf4154b5206f8d967814f60fd5"
+          }
+        },
+        {
+          "client_id": "196035147177-lpgh3t2gbe5ufv1ras9g80obhmtg7l9o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMcbfybON8mp_pfi-aIjC5P4k8jVl6kgo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "196035147177-lpgh3t2gbe5ufv1ras9g80obhmtg7l9o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

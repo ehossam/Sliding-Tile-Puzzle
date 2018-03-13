@@ -1,46 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_mode"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="team6.slidingtiles.NumberMode"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="team6.slidingtiles.NumberMode">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="#000000"
-        >
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <Chronometer
-            android:id="@+id/timer"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            android:textSize="40sp"
-            android:layout_alignParentStart="true"
-            android:gravity="center"
-            android:textColor="#ffffff"/>
-        <android.support.v7.widget.AppCompatImageButton
-            android:id="@+id/menu_button"
-            android:layout_width="?android:attr/actionBarSize"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/pause_menu"
-            android:background="#000000"
-            android:scaleType="fitXY"
-            android:padding="10dp"
-            />
+
+            <Chronometer
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:gravity="center"
+                android:textColor="#ffffff"
+                android:textSize="40sp" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/menu_button"
+                android:layout_width="?android:attr/actionBarSize"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:background="#000000"
+                android:padding="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/pause_menu" />
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/equation_button"
+                android:layout_width="?android:attr/actionBarSize"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="11dp"
+                android:background="#000000"
+                android:padding="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/puzzle_equal" />
+
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
-
     <FrameLayout
-        android:layout_weight="1"
         android:id="@+id/fragmentFrame"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
-</LinearLayout>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/scorebar"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/scorebar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="#000000"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragmentFrame">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/my_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:minWidth="100dp"
+                android:textColor="#ffffff"
+                android:textSize="40sp" />
+
+            <Button
+                android:id="@+id/center_button"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff" />
+
+            <TextView
+
+                android:id="@+id/their_score"
+                android:gravity="end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:minWidth="100dp"
+                android:textColor="#ffffff"
+                android:textSize="40sp" />
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+</android.support.constraint.ConstraintLayout>

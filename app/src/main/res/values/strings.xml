@@ -6,5 +6,9 @@
     <string name="pause">Pause</string>
     <string name="pause_menu">Pause Menu</string>
     <string name="finish">Finished</string>
+    <string name="single_player">Single Player</string>
+    <string name="player_basic">Two Player Basic Mode</string>
+    <string name="player_cutthroat">Two Player Cutthroat Mode</string>
     <string name="number_mode">Number mode</string>
+    <string name="high_scores">High Scores</string>
 </resources>

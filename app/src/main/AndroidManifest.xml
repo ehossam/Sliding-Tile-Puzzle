@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="team6.slidingtiles">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,6 +19,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".NumberMode" />
+        <activity android:name=".RegisterPage" />
+        <activity android:name=".SigninPage" />
+        <activity android:name=".MathMode"/>
+        <activity android:name=".MathModeMultiSimple"/>
+        <activity android:name=".SaveScore" />
+        <activity android:name=".HighScore"/>
+        <activity android:name=".PlayerMode"/>
     </application>
 
 </manifest>

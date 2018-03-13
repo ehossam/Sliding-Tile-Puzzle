@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 /**
  * Abstract super class for MathBoard and NumberBoard
  */
@@ -18,6 +20,7 @@ abstract class Board implements Parcelable{
     final static int TILE_COUNT = (int)(Math.pow(TILE_SIDE, 2));
 
     String[][] board;
+
     int blankX;
     int blankY;
 
@@ -109,4 +112,38 @@ abstract class Board implements Parcelable{
         bundle.putInt(ARG_BLANKX, blankX);
         bundle.putInt(ARG_BLANKY, blankY);
     }
+
+    /**
+     * Checks equality of two Boards
+     * @param obj the Board to compare to this one
+     * @return true if the Boards are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Board) {
+            Board other = (Board) obj;
+            return (Arrays.deepEquals(this.board, other.board) &&
+                    this.blankX == other.blankX &&
+                    this.blankY == other.blankY);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get X-coordinate of the blank tile
+     * @return X-coordinate of the blank tile
+     */
+    public int getBlankX() {
+        return this.blankX;
+    }
+
+    /**
+     * Get Y-coordinate of the blank tile
+     * @return Y-coordinate of the blank tile
+     */
+    public int getBlankY() {
+        return this.blankY;
+    }
+
 }

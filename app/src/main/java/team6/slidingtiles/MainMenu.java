@@ -9,6 +9,19 @@ import android.widget.Button;
 public class MainMenu extends AppCompatActivity {
 
     public Button button1;
+    public Button button2;
+
+    public void onMathMode(){
+        button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainMenu.this,SigninPage.class);
+                startActivity(intent);
+            }
+        });
+    }
+
 
     public void onNumberMode(){
         button1 = findViewById(R.id.button1);
@@ -26,6 +39,7 @@ public class MainMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
         onNumberMode();
+        onMathMode();
     }
 
 

@@ -6,18 +6,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.BoringLayout;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-
 
 public abstract class GameMode extends AppCompatActivity implements BoardFragment.SelectionHandler {
     ArrayList<String> boardLayout;
     BoardFragment   boardFragment;
     Chronometer     timer;
-    int     difficulty;
     int     blankTile;
     long    timePaused;
     Board gameBoard;
@@ -51,10 +54,9 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
 
         boardFragment = BoardFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentFrame, boardFragment).commit();;
-
-        newGame();
+                .add(R.id.fragmentFrame, boardFragment).commit();
     }
+
 
     /**
      * onResume is called when the activity becomes visible again
@@ -93,34 +95,6 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
         timer.start();
     }
 
-    /**
-     * creates a newGameDialog to be displayed, lets user select difficulty
-     * @return the Builder which the actionDialog is contained in
-     */
-    AlertDialog.Builder newGameDialog() {
-        CharSequence options[]      = new CharSequence[]{"Easy", "Normal", "Hard"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Difficulty");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                switch (i){
-                    case 0:
-                        difficulty = 8;
-                        break;
-                    case 1:
-                        difficulty = 16;
-                        break;
-                    case 2:
-                        difficulty = 32;
-                        break;
-                }
-                createGame();
-            }
-        });
-        builder.setCancelable(false);
-        return builder;
-    }
 
     /**
      * convert from 2d array to ArrayList
@@ -139,9 +113,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
      * displays the new game menu
      */
     void newGame(){
-        AlertDialog.Builder builder = newGameDialog();
         pauseTimer();
-        builder.show();
     }
 
     /**
@@ -223,5 +195,12 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
      */
     public boolean handleSelection(int pos){
         return moveTile(pos);
+    }
+
+    public boolean handleSWipe(int start, int end){
+        return true;
+    }
+    public void fragmentReady(){
+        newGame();
     }
 }
