@@ -24,7 +24,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     int     blankTile;
     long    timePaused;
     Board gameBoard;
-
+    AiPlayer Aiplayer;
 
     /**
      * is called when the activity is created, sets variables and onClickListeners
