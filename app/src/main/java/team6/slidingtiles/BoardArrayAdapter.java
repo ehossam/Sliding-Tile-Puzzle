@@ -67,7 +67,7 @@ public class BoardArrayAdapter extends BaseAdapter {
         else
             imageView = (ImageView) convertView;
 
-        imageView.setMinimumHeight(299);
+        imageView.setMinimumHeight(height);
         switch (boardLayout.get(position)){
             case " ":
                 imageView.setImageResource(R.drawable.puzzle0);

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.BoringLayout;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -146,6 +147,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
         timePaused = 0;
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
+        SetBoard(gameBoard);
     }
 
     /**
@@ -167,7 +169,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
                         newGame();
                         break;
                     case 2:
-                        finish();
+                        endGame();
                         break;
                 }
             }
@@ -180,6 +182,10 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
             }
         });
         return builder;
+    }
+
+    void endGame(){
+        finish();
     }
 
     /**
