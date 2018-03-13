@@ -19,6 +19,7 @@ public class AiNumMode extends AiMode2 implements AiBoardFragment.SelectionHandl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         gameBoard1 = null;
+        gameBoard2=null;
         difficulty = 0;
         super.onCreate(savedInstanceState);
     }
@@ -59,16 +60,11 @@ public class AiNumMode extends AiMode2 implements AiBoardFragment.SelectionHandl
         gameBoard1 = new NumberBoard(true, difficulty);
         SetBoard(gameBoard1);
         gameBoard2=new NumberBoard(true, difficulty);
+       // gameBoard2=gameBoard1;
         testPlayer.setBoard(gameBoard2);
+        reflect();
         super.createGame();
-        //int count = 0;
-        /*
-        while (!gameBoard2.isComplete() && count++ < 100) {
-            testPlayer.makeMove();
-        }
 
-        assert(gameBoard2.isComplete());
-        */
     }
 
     /**

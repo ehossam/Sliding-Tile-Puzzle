@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 
 
-public class BoardArrayAdapter extends BaseAdapter {
+public class BoardArrayAdapter2 extends BaseAdapter {
     private Context context;
     private ArrayList<String> boardLayout;
     private int height;
@@ -26,7 +26,7 @@ public class BoardArrayAdapter extends BaseAdapter {
      * @param boardLayout the current board layout as an ArrayList
      * @param height the height of the containing activity
      */
-    BoardArrayAdapter(Context context, ArrayList<String> boardLayout, int height) {
+    BoardArrayAdapter2(Context context, ArrayList<String> boardLayout, int height) {
         super();
         this.context = context;
         this.boardLayout = boardLayout;
@@ -67,7 +67,8 @@ public class BoardArrayAdapter extends BaseAdapter {
         else
             imageView = (ImageView) convertView;
 
-        imageView.setMinimumHeight(299);
+        //imageView.setMinimumHeight();
+        //imageView.setMaxHeight(1);
 
         switch (boardLayout.get(position)){
             case " ":

@@ -95,7 +95,7 @@ public class AiBoardFragment extends Fragment {
      * @param boardLayout the boardLayout ArrayList to be displayed in the gridview
      */
     public void setBoardLayout(ArrayList<String> boardLayout) {
-        final BoardArrayAdapter adapter = new BoardArrayAdapter
+        final BoardArrayAdapter2 adapter = new BoardArrayAdapter2
                 (getView().getContext(), boardLayout, 700);
         boardGrid = getView().findViewById(R.id.board_grid_ai);
         boardGrid.invalidateViews();
