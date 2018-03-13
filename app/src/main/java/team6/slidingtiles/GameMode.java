@@ -24,6 +24,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     int     blankTile;
     long    timePaused;
     Board gameBoard;
+    boolean canPause = true;
 
 
     /**
@@ -89,16 +90,20 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
      * pauses the timer
      */
     void pauseTimer(){
-        timePaused = timer.getBase() - SystemClock.elapsedRealtime();
-        timer.stop();
+        if(canPause) {
+            timePaused = timer.getBase() - SystemClock.elapsedRealtime();
+            timer.stop();
+        }
     }
 
     /**
      * resumes the timer
      */
     void resumeTimer(){
-        timer.setBase(SystemClock.elapsedRealtime() + timePaused);
-        timer.start();
+        if(canPause) {
+            timer.setBase(SystemClock.elapsedRealtime() + timePaused);
+            timer.start();
+        }
     }
 
 

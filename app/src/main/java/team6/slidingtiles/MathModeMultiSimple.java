@@ -59,6 +59,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     @Override
     protected void onCreate(Bundle savedInstanceState){
         gameBoard = null;
+        canPause = false;
 
         super.onCreate(savedInstanceState);
         firebaseAuth = FirebaseAuth.getInstance();
@@ -266,26 +267,26 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             Object value = dataSnapshot.getValue();
             Log.d("onChildChanged", "onChildChanged: " + key);
             switch (key) {
-                case "p1score":
+                case "p1Score":
                     if (playerNum == 1) {
-                        myScore =  (Integer) value;
+                        myScore =  dataSnapshot.getValue(Integer.class);
                     } else {
-                        theirScore =  (Integer) value;
+                        theirScore =  dataSnapshot.getValue(Integer.class);
                     }
                     updateScores();
                     break;
 
-                case "p2score":
+                case "p2Score":
                     if (playerNum == 1) {
-                        theirScore = (Integer) value;
+                        theirScore = dataSnapshot.getValue(Integer.class);
                     } else {
-                        myScore = (Integer) value;
+                        myScore = dataSnapshot.getValue(Integer.class);
                     }
                     updateScores();
                     break;
 
                 case "isOpen":
-                    if (!((Boolean) value)) {
+                    if (!dataSnapshot.getValue(Boolean.class)) {
                         roomFound();
                         matchingDialog.dismiss();
                         break;
