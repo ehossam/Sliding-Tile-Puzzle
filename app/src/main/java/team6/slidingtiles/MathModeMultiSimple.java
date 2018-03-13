@@ -158,11 +158,44 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     }
 
     void createGame(){
-        matchingDialog();
+        if(no_rounds<=1){
+            matchingDialog();
+        }
+        else{
+            no_rounds--;
+            myScore = 0;
+            theirScore = 0;
+            updateScores();
+            String name = "initBoardState";
+            gameBoard = new MathBoard(false);
+            List<String> mathBoardList = new ArrayList<>();
+            for (int i = 0; i < gameBoard.getBoard().length; i++){
+                mathBoardList.addAll(Arrays.asList(gameBoard.getBoard()[i]));
+            }
 
+            databaseReference.child("rooms").child(room.getKey()).child(name).setValue(mathBoardList);
+            SetBoard(gameBoard);
+            super.createGame();
+        }
     }
 
-    @Override
+    void createGame2(){
+        if(no_rounds<=1){
+            matchingDialog();
+        }
+        else{
+            no_rounds--;
+            myScore = 0;
+            theirScore = 0;
+            updateScores();
+            this.gameBoard = new MathBoard(room.getInitBoardState());
+            SetBoard(this.gameBoard);
+            super.createGame();
+        }
+    }
+
+
+   @Override
     public boolean handleSWipe(int start, int end) {
         int startX = start % 5;
         int startY = start / 5;
@@ -171,7 +204,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         int endY = end / 5;
 
 
-        Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
         if ((startX == 0 || endX == 0) && startY == endY) {
             myScore += ((MathBoard) gameBoard).getScore(startX, startY, false);
         } else if ((startY == 0 || endY == 0) && startX == endX) {
@@ -221,30 +253,13 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
     @Override
     public void roomFound() {
-
         room = roomFinder.getRoom();
-        int total_rounds = room.getNoRounds();
         playerNum = roomFinder.getPlayerNum();
-        for(int i=0;i<total_rounds;i++)
-            {
-             Log.d("round in roomFound ",String.valueOf(i) ) ;
-             Log.d("player in roomFound ",String.valueOf(playerNum) ) ;
-
-                if(playerNum == 1 && i>0){
-                 //let 1 player update the mathboard
-                 MathBoard mathBoard = new MathBoard(false);
-                 List<String> mathBoardList = new ArrayList<>();
-                 for (int j = 0; j < mathBoard.getBoard().length; j++){
-                      mathBoardList.addAll(Arrays.asList(mathBoard.getBoard()[j]));
-                     }
-                 room.setInitBoardState(mathBoardList);
-             }
-              this.gameBoard = new MathBoard(room.getInitBoardState());
-              SetBoard(this.gameBoard);
-              updateScores();
-              matchingDialog.cancel();
-              super.createGame();
-            }
+        this.gameBoard = new MathBoard(room.getInitBoardState());
+        SetBoard(this.gameBoard);
+        updateScores();
+        matchingDialog.cancel();
+        super.createGame();
     }
 
     public void updateScores(){
@@ -283,6 +298,9 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
 
             if(key.equals("isOpen") )
                 roomFound();
+
+            if(key.equals("initBoardState"))
+                createGame2();
         }
 
         @Override
