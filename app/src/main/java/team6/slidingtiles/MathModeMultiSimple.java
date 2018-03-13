@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -51,17 +52,17 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     int playerNum;
     String roomKey;
     HashSet<String> usedEquations;
+    public int no_rounds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        Intent mintent = getIntent();
+        no_rounds = mintent.getIntExtra("rounds", 1); //no of rounds passed from previous activity
         gameBoard = null;
-
         super.onCreate(savedInstanceState);
         firebaseAuth = FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser()==null) {
-            //closing this activity
             finish();
-            //start new activity
             Intent intent = new Intent(MathModeMultiSimple.this, SigninPage.class);
             startActivity(intent);
         }
@@ -214,24 +215,36 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         adBuilder.setView(findViewById(R.id.matching_dialog_view));
         matchingDialog = adBuilder.create();
         matchingDialog.show();
-
         roomFinder = new RoomFinder(this);
-        Log.d(" roomfinder.getopenroom", ": ");
-
         roomFinder.getOpenRoom();
     }
 
     @Override
     public void roomFound() {
-        Log.d("Going to get room", "roomFound: ");
 
         room = roomFinder.getRoom();
+        int total_rounds = room.getNoRounds();
         playerNum = roomFinder.getPlayerNum();
-        this.gameBoard = new MathBoard(room.getInitBoardState());
-        SetBoard(this.gameBoard);
-        updateScores();
-        matchingDialog.cancel();
-        super.createGame();
+        for(int i=0;i<total_rounds;i++)
+            {
+             Log.d("round in roomFound ",String.valueOf(i) ) ;
+             Log.d("player in roomFound ",String.valueOf(playerNum) ) ;
+
+                if(playerNum == 1 && i>0){
+                 //let 1 player update the mathboard
+                 MathBoard mathBoard = new MathBoard(false);
+                 List<String> mathBoardList = new ArrayList<>();
+                 for (int j = 0; j < mathBoard.getBoard().length; j++){
+                      mathBoardList.addAll(Arrays.asList(mathBoard.getBoard()[j]));
+                     }
+                 room.setInitBoardState(mathBoardList);
+             }
+              this.gameBoard = new MathBoard(room.getInitBoardState());
+              SetBoard(this.gameBoard);
+              updateScores();
+              matchingDialog.cancel();
+              super.createGame();
+            }
     }
 
     public void updateScores(){
@@ -268,7 +281,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                 updateScores();
             }
 
-            if(key.equals("isOpen"))
+            if(key.equals("isOpen") )
                 roomFound();
         }
 

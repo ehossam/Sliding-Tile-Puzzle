@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 public class PlayerMode extends AppCompatActivity implements View.OnClickListener {
 
@@ -13,6 +14,9 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
     private Button buttonCutthroat;
     private Button buttonSingle;
     private Button buttonHighScore;
+    private int no_rounds = 0;
+
+    private CheckBox checkbox1,checkbox2,checkbox3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,19 +32,60 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
         buttonCutthroat.setOnClickListener(this);
         buttonSingle.setOnClickListener(this);
         buttonHighScore.setOnClickListener(this);
+        addListenerOnC1();
+        addListenerOnC2();
+        addListenerOnC3();
+
     }
 
+    public void addListenerOnC1() {
+        checkbox1 = (CheckBox) findViewById(R.id.checkbox1);
+        checkbox1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                   no_rounds = 1;
+                    Log.d("no of rounds", String.valueOf(no_rounds));
+                }
+            }
+        });
+
+    }
+
+    public void addListenerOnC2() {
+        checkbox2 = (CheckBox) findViewById(R.id.checkbox2);
+        checkbox2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    no_rounds = 2;
+                    Log.d("no of rounds", String.valueOf(no_rounds));
+                }
+            }
+        });
+    }
+
+    public void addListenerOnC3() {
+        checkbox3 = (CheckBox) findViewById(R.id.checkbox3);
+        checkbox3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (((CheckBox) v).isChecked()) {
+                    no_rounds = 3;
+                    Log.d("no of rounds", String.valueOf(no_rounds));
+                }
+            }
+        });
+    }
     @Override
     public void onClick(View view) {
         if(view == buttonSingle){
-            //TODO : redirect to single player mode
             Intent intent = new Intent(PlayerMode.this,MathMode.class);
             startActivity(intent);
         }
         if(view == buttonBasic){
-
-            //TODO : redirect to two player basic mode
             Intent intent = new Intent(PlayerMode.this,MathModeMultiSimple.class);
+            intent.putExtra("rounds",no_rounds);
             startActivity(intent);
         }
         if(view == buttonCutthroat){
