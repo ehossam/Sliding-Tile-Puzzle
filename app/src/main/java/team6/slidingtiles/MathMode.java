@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -59,14 +60,6 @@ public class MathMode extends GameMode  {
         score = 0;
         scoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         scoreView.setText(Integer.toString(score));
-
-        ImageButton equationIcon = findViewById(R.id.equation_button);
-        equationIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                savedequtions().show();
-            }
-        });
     }
 
     private void saveScore(){
@@ -147,9 +140,21 @@ public class MathMode extends GameMode  {
     void createGame(){
         score = 0;
         scoreView.setText(Integer.toString(score));
-        gameBoard = new MathBoard(true);
-        SetBoard(gameBoard);
-        super.createGame();
+        gameBoard = new MathBoard(false);
+        CountDownTimer createTimer = new CountDownTimer(30, 1) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                gameBoard = new MathBoard(false);
+                MathMode.super.createGame();
+
+            }
+        };
+        createTimer.start();
     }
 
     @Override
@@ -167,7 +172,7 @@ public class MathMode extends GameMode  {
         } else if ((startY == 0 || endY == 0) && startX == endX) {
             score += ((MathBoard) gameBoard).getScore(startX, startY, true);
         } else return false;
-        scoreView.setText(Integer.toString(score));
+        scoreView.setText("My score: " + Integer.toString(score));
         return true;
     }
 }

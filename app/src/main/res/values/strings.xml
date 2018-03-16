@@ -11,4 +11,7 @@
     <string name="player_cutthroat">Two Player Cutthroat Mode</string>
     <string name="number_mode">Number mode</string>
     <string name="high_scores">High Scores</string>
+    <string name="title_activity_play_num_mode">PlayNumMode</string>
+    <string name="title_activity_aimode2">Aimode2</string>
+    <string name="action_settings">Settings</string>
 </resources>

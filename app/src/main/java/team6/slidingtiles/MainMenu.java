@@ -28,7 +28,7 @@ public class MainMenu extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainMenu.this,NumberMode.class);
+                Intent intent = new Intent(MainMenu.this,PlayNumMode.class);
                 startActivity(intent);
             }
         });

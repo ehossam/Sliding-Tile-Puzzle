@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 
@@ -15,21 +16,25 @@ import java.util.List;
 
 public class MathBoard extends Board {
 
+    private static List<String> LEGAL_OPS;
     private static List<String> LEGAL_TILES;
-    private HashSet<String> foundEquations;
+    private LinkedHashSet<String> foundEquations;
 
     static {
         List<String> temp = new ArrayList<>();
         temp.add(Board.BLANK);
         temp.add("=");
-        temp.add("+");
-        temp.add("-");
-        temp.add("*");
-        temp.add("/");
         for (int i = 0; i < 10; i++) {
             temp.add(Integer.toString(i));
         }
+        List<String> tempOps = new ArrayList<>();
+        tempOps.add("+");
+        tempOps.add("-");
+        tempOps.add("*");
+        tempOps.add("/");
+        temp.addAll(tempOps);
 
+        LEGAL_OPS = tempOps;
         LEGAL_TILES = temp;
     }
 
@@ -72,7 +77,7 @@ public class MathBoard extends Board {
             this.board[currentY][currentX] = current;
         }
 
-        this.foundEquations = new HashSet<>();
+        this.foundEquations = new LinkedHashSet<>();
     }
 
     /**
@@ -82,7 +87,7 @@ public class MathBoard extends Board {
      */
     MathBoard(boolean isTest) {
 
-        this.foundEquations = new HashSet<>();
+        this.foundEquations = new LinkedHashSet<>();
         this.blankX = 3;
         this.blankY = 3;
         this.board = new String[][]{{"6", "5", "4", "-", "9"},
@@ -185,13 +190,34 @@ public class MathBoard extends Board {
     }
 
     /**
+     * Allows adding equations to the foundEquations list for cutthroat mode
+     * @param equation equation to add (format: #r = #1 [op] #2)
+     * @return true if the equation is in proper format and added to foundEquations, otherwise false
+     */
+    boolean insertNoScoreEquation(String equation) {
+        int operand1 = Character.getNumericValue(equation.charAt(2));
+        int operand2 = Character.getNumericValue(equation.charAt(4));
+        int result = Character.getNumericValue(equation.charAt(0));
+        // make sure characters are actually digits, and equal sign is found
+        if (result < 0 || result > 9 ||
+            operand1 < 0 || operand1 > 9 ||
+            operand2 < 0 || operand2 > 9 ||
+            equation.charAt(1) != '=' || !MathBoard.LEGAL_OPS.contains(equation.substring(3, 4))) {
+            return false;
+        } else {
+            foundEquations.add(equation);
+            return true;
+        }
+    }
+
+    /**
      * Get the set of found equations
      * @return a hash set of equations that have been found
      */
 
-    public HashSet<String> foundEquations() {
+    public LinkedHashSet<String> foundEquations() {
         // create deep copy
-        HashSet<String> copy = new HashSet<>();
+        LinkedHashSet<String> copy = new LinkedHashSet<>();
         copy.addAll(this.foundEquations);
         return copy;
     }

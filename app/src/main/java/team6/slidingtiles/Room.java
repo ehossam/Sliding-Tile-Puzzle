@@ -13,10 +13,11 @@ public class Room {
     private int p2Score;
     private int noRounds;
     private List<String> initBoardState;
-    private List<String> usedEquations;
     private List<String> winners;
-    long time;
     String key;
+    private String lastUsed;
+    private boolean roundStarted;
+    private String key;
 
     public Room(){
 
@@ -27,10 +28,12 @@ public class Room {
         p1Score = 0;
         p2Score = 0;
         noRounds = 0;
-        time    = 0;
   //      key = null;
         usedEquations = new ArrayList<>();
         winners = new ArrayList<>();
+        roundStarted    = false;
+  //      key = null;
+        lastUsed = "No equations";
         this.initBoardState = initBoardState;
     }
 
@@ -64,16 +67,16 @@ public class Room {
         this.p2Score = p2Score;
     }
 
-    public void setUsedEquations(List<String> usedEquations) {
-        this.usedEquations = usedEquations;
+    public void setLastUsed(String lastUsed) {
+        this.lastUsed = lastUsed;
     }
 
     public void setInitBoardState(List<String> initBoardState) {
         this.initBoardState = initBoardState;
     }
 
-    public void setTime(long time) {
-        this.time = time;
+    public void setRoundStarted(boolean roundStarted) {
+        this.roundStarted = roundStarted;
     }
 
     public void setIsOpen(Boolean open) {
@@ -92,8 +95,8 @@ public class Room {
         return p2Score;
     }
 
-    public List<String> getUsedEquations() {
-        return usedEquations;
+    public String getLastUsed() {
+        return lastUsed;
     }
 
     public List<String> getInitBoardState() {
@@ -106,8 +109,8 @@ public class Room {
 
 
 
-    public long getTime() {
-        return time;
+    public boolean getRoundStarted() {
+        return roundStarted;
     }
 
     public void setKey(String key){
