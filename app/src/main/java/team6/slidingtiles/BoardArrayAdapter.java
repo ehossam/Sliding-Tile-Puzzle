@@ -19,6 +19,7 @@ public class BoardArrayAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<String> boardLayout;
     private int height;
+    private int width;
 
     /**
      * constructor for the adapter.
@@ -26,11 +27,12 @@ public class BoardArrayAdapter extends BaseAdapter {
      * @param boardLayout the current board layout as an ArrayList
      * @param height the height of the containing activity
      */
-    BoardArrayAdapter(Context context, ArrayList<String> boardLayout, int height) {
+    BoardArrayAdapter(Context context, ArrayList<String> boardLayout, int height, int width) {
         super();
         this.context = context;
         this.boardLayout = boardLayout;
         this.height = height/5;
+        this.width = width/5;
     }
 
     /**
@@ -66,9 +68,11 @@ public class BoardArrayAdapter extends BaseAdapter {
             imageView = (ImageView) inflater.inflate(R.layout.g_image_view, null);
         else
             imageView = (ImageView) convertView;
-
-        imageView.setMinimumHeight(height);
-        imageView.setMaxHeight(height);
+        android.view.ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(width, height);
+        imageView.setLayoutParams(layoutParams);
+  //      imageView.setMinimumHeight(height);
+   //     imageView.setMaxHeight(height);
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         switch (boardLayout.get(position)){
             case " ":
                 imageView.setImageResource(R.drawable.puzzle0);

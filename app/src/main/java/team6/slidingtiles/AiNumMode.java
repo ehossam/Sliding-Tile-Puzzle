@@ -61,6 +61,7 @@ public class AiNumMode extends AiMode2 {
         gameBoard1 = new NumberBoard(true, difficulty);
         SetBoard(gameBoard1);
         gameBoard2=new NumberBoard(gameBoard1);
+        SetAiBoard(gameBoard2);
         testPlayer.setBoard(gameBoard2);
         super.createGame();
 
@@ -105,8 +106,8 @@ public class AiNumMode extends AiMode2 {
 
         if((gameBoard1).isComplete())
             complete();
-        aiTask = new AiTask(this, testPlayer, gameBoard2);
-        aiTask.execute();
+
+        new AiTask(this, testPlayer, gameBoard2).execute();
         return success;
     }
 

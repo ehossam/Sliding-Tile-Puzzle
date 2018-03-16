@@ -72,11 +72,13 @@ public class AiBoardFragment extends Fragment {
      * @param boardLayout the boardLayout ArrayList to be displayed in the gridview
      */
     public void setBoardLayout(ArrayList<String> boardLayout) {
-        final BoardArrayAdapter adapter = new BoardArrayAdapter
-                (getView().getContext(), boardLayout, 700);
-        boardGrid = getView().findViewById(R.id.board_grid_ai);
-        boardGrid.invalidateViews();
-        boardGrid.setAdapter(adapter);
+        if (getView() != null) {
+            final BoardArrayAdapter adapter = new BoardArrayAdapter
+                    (getView().getContext(), boardLayout, getView().getHeight(), getView().getWidth());
+            boardGrid = getView().findViewById(R.id.board_grid_ai);
+            boardGrid.invalidateViews();
+            boardGrid.setAdapter(adapter);
+        }
     }
 
     /**

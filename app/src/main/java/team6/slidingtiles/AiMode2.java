@@ -18,6 +18,7 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
 
 public abstract class AiMode2 extends AppCompatActivity
         implements BoardFragment.SelectionHandler, AiBoardFragment.AiSelectionHandler{
@@ -65,9 +66,9 @@ public abstract class AiMode2 extends AppCompatActivity
             }
         });
 
-        boardFragment1 = BoardFragment.newInstance();
+        boardFragment2 = AiBoardFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentFrame1, boardFragment1).commit();
+                .add(R.id.fragmentFrame2, boardFragment2).commit();
     }
 
 
@@ -160,9 +161,6 @@ public abstract class AiMode2 extends AppCompatActivity
      * starts the timer. this must be called from child classes
      */
     void createGame(){
-        boardFragment2 = AiBoardFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentFrame2, boardFragment2).commit();
         timePaused = 0;
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
@@ -242,7 +240,9 @@ public abstract class AiMode2 extends AppCompatActivity
     }
 
     public void aiFragmentReady(){
-        SetAiBoard(gameBoard2);
+        boardFragment1 = BoardFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentFrame1, boardFragment1).commit();
     }
 
     public void updateAiBoard(State.Location result){
@@ -270,7 +270,8 @@ public abstract class AiMode2 extends AppCompatActivity
 
         @Override
         protected void onPostExecute(State.Location location) {
-            aiNumModeWeakReference.get().updateAiBoard(location);
+            if (aiNumModeWeakReference.get() != null)
+                aiNumModeWeakReference.get().updateAiBoard(location);
         }
     }
 

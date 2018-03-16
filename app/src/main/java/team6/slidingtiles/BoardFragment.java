@@ -97,7 +97,7 @@ public class BoardFragment extends Fragment {
      */
     public void setBoardLayout(ArrayList<String> boardLayout) {
         BoardArrayAdapter adapter = new BoardArrayAdapter
-                (getView().getContext(), boardLayout, getView().getHeight());
+                (getView().getContext(), boardLayout, getView().getHeight(), getView().getWidth());
         boardGrid = getView().findViewById(R.id.board_grid);
         boardGrid.invalidateViews();
         boardGrid.setAdapter(adapter);
