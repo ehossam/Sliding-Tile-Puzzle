@@ -3,6 +3,7 @@ package team6.slidingtiles;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.DisplayMetrics;
@@ -95,8 +96,8 @@ public class BoardFragment extends Fragment {
      * @param boardLayout the boardLayout ArrayList to be displayed in the gridview
      */
     public void setBoardLayout(ArrayList<String> boardLayout) {
-        final BoardArrayAdapter adapter = new BoardArrayAdapter
-                (getView().getContext(), boardLayout, 700);
+        BoardArrayAdapter adapter = new BoardArrayAdapter
+                (getView().getContext(), boardLayout, getView().getHeight());
         boardGrid = getView().findViewById(R.id.board_grid);
         boardGrid.invalidateViews();
         boardGrid.setAdapter(adapter);

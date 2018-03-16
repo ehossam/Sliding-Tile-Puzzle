@@ -1,5 +1,6 @@
 package team6.slidingtiles;
 
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,16 +28,18 @@ import java.util.Queue;
 public class RoomFinder {
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
-    private MathModeMultiSimple mathModeMultiSimple;
+    private GameMode gameMode;
     boolean flag = false;
+    private String mode;
 
     Room room;
     int playerNum;
     public String id;
 
-    public RoomFinder(MathModeMultiSimple mathModeMultiSimple){
+    public RoomFinder(GameMode gameMode, String mode){
         databaseReference = FirebaseDatabase.getInstance().getReference().child("rooms");
-        this.mathModeMultiSimple = mathModeMultiSimple;
+        this.mode = mode;
+        this.gameMode = gameMode;
 
         Log.d("In Room Finder main", ": ");
     }
@@ -56,15 +59,23 @@ public class RoomFinder {
                     Log.d("room result", String.valueOf(dataSnapshot.getValue()));
                     if(dataSnapshot.getChildren().iterator().hasNext())
                         room = dataSnapshot.getChildren().iterator().next().getValue(Room.class);
+                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
 
                     Log.d("room result", String.valueOf(room));
 
                     Log.d("key value in listener", room.getKey());
                     playerNum = 2;
-                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
-                    databaseReference.child(room.getKey()).getRef().
-                            addChildEventListener(mathModeMultiSimple.childEventListener);
-                    mathModeMultiSimple.roomFound();
+                    if (mode.equals("MathModeMultiCut")) {
+                        databaseReference.child(room.getKey()).getRef().
+                                addChildEventListener(((MathModeMultiCut) gameMode).childEventListener);
+                        ((MathModeMultiCut) gameMode).roomFound();
+                    }
+
+                    if (mode.equals("MathModeMultiSimple")) {
+                        databaseReference.child(room.getKey()).getRef().
+                                addChildEventListener(((MathModeMultiSimple) gameMode).childEventListener);
+                        ((MathModeMultiSimple) gameMode).roomFound();
+                    }
                 } else {
                     Log.d("creating open room", ":in else part");
                     createOpenRoom();
@@ -91,9 +102,23 @@ public class RoomFinder {
         room.setKey(key1);
         Log.d("key print in create", room.getKey());
         databaseReference.child(key1).setValue(room);
-        databaseReference.child(room.getKey()).getRef().
-                addChildEventListener(mathModeMultiSimple.childEventListener);
+        if(mode.equals("MathModeMultiCut"))
+            databaseReference.child(room.getKey()).getRef().
+                    addChildEventListener(((MathModeMultiCut)gameMode).childEventListener);
+        if(mode.equals("MathModeMultiSimple"))
+            databaseReference.child(room.getKey()).getRef().
+                    addChildEventListener(((MathModeMultiSimple)gameMode).childEventListener);
         playerNum = 1;
+    }
+
+    public void removeRoom(){
+        if(mode.equals("MathModeMultiCut"))
+            databaseReference.child(room.getKey()).getRef().
+                    removeEventListener(((MathModeMultiCut)gameMode).childEventListener);
+        if(mode.equals("MathModeMultiSimple"))
+            databaseReference.child(room.getKey()).getRef().
+                    removeEventListener(((MathModeMultiSimple)gameMode).childEventListener);
+        databaseReference.child(room.getKey()).removeValue();
     }
 
     interface RoomFinderListener{

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.BoringLayout;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -24,6 +25,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     int     blankTile;
     long    timePaused;
     Board gameBoard;
+    boolean canPause = true;
     AiPlayer Aiplayer;
 
     /**
@@ -57,6 +59,12 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
                 .add(R.id.fragmentFrame, boardFragment).commit();
     }
 
+    @Override
+    protected void onStop() {
+        getSupportFragmentManager().beginTransaction()
+                .remove(boardFragment);
+        super.onStop();
+    }
 
     /**
      * onResume is called when the activity becomes visible again
@@ -83,16 +91,20 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
      * pauses the timer
      */
     void pauseTimer(){
-        timePaused = timer.getBase() - SystemClock.elapsedRealtime();
-        timer.stop();
+        if(canPause) {
+            timePaused = timer.getBase() - SystemClock.elapsedRealtime();
+            timer.stop();
+        }
     }
 
     /**
      * resumes the timer
      */
     void resumeTimer(){
-        timer.setBase(SystemClock.elapsedRealtime() + timePaused);
-        timer.start();
+        if(canPause) {
+            timer.setBase(SystemClock.elapsedRealtime() + timePaused);
+            timer.start();
+        }
     }
 
 
@@ -135,6 +147,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
         timePaused = 0;
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
+        SetBoard(gameBoard);
     }
 
     /**
@@ -156,7 +169,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
                         newGame();
                         break;
                     case 2:
-                        finish();
+                        endGame();
                         break;
                 }
             }
@@ -169,6 +182,10 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
             }
         });
         return builder;
+    }
+
+    void endGame(){
+        finish();
     }
 
     /**
