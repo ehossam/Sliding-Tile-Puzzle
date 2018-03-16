@@ -14,6 +14,7 @@ public class Room {
     private int noRounds;
     private List<String> initBoardState;
     private List<String> usedEquations;
+    private List<String> winners;
     long time;
     String key;
 
@@ -29,6 +30,7 @@ public class Room {
         time    = 0;
   //      key = null;
         usedEquations = new ArrayList<>();
+        winners = new ArrayList<>();
         this.initBoardState = initBoardState;
     }
 
@@ -37,6 +39,14 @@ public class Room {
         this.key = key;
     }
     */
+
+    public List<String> getWinners() {
+        return winners;
+    }
+
+    public void setWinners(List<String> winners) {
+        this.winners = winners;
+    }
 
     public int getNoRounds() {
         return noRounds;

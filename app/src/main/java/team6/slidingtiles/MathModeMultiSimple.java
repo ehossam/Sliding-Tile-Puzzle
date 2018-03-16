@@ -53,12 +53,18 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     String roomKey;
     HashSet<String> usedEquations;
     public int no_rounds;
+    List<String> newBoard = new ArrayList<>();
+    List<String> winners = new ArrayList<>();
+    String name; //username of players
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+
         Intent mintent = getIntent();
         no_rounds = mintent.getIntExtra("rounds", 1); //no of rounds passed from previous activity
         gameBoard = null;
+        Log.d("round oncreate", "round: " + no_rounds);
+
         super.onCreate(savedInstanceState);
         firebaseAuth = FirebaseAuth.getInstance();
         if(firebaseAuth.getCurrentUser()==null) {
@@ -68,6 +74,12 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         }
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        String email = user.getEmail();
+        String[] userName = email.split("@");
+        name = userName[0];
 
         myScoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         theirScoreView = getWindow().getDecorView().findViewById(R.id.their_score);
@@ -83,11 +95,7 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
           }
 
     private void saveScore(){
-        FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        String email = user.getEmail();
-        String[] userName = email.split("@");
-        String name = userName[0];
 
         UserScore userScore = new UserScore(name, myScore);
 
@@ -128,6 +136,24 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     }
 
 
+    AlertDialog.Builder winnerDialog() {
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+        adBuilder.setTitle("Winner ");
+        String message = "";
+        for(int i=0;i<winners.size();i++){
+           message += " Round "+ (i+1) +" : "+ winners.get(i) + "\n";
+        }
+        adBuilder.setMessage(message);
+        adBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Intent intent = new Intent(MathModeMultiSimple.this,PlayerMode.class);
+                startActivity(intent);
+            }
+        });
+        return adBuilder;
+    }
+
+
 
     AlertDialog.Builder savedequtions() {
        final AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
@@ -149,7 +175,25 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         return adBuilder;
     }
 
+    void findWinner(){
+        String property = "winners";
+              if(myScore>theirScore){
+                winners.add(name);
+                databaseReference.child("rooms").child(room.getKey()).child(property).setValue(winners);
+            }
+            else if(myScore==theirScore) {
+                winners.add("Tie Occurred");
+                databaseReference.child("rooms").child(room.getKey()).child(property).setValue(winners);
+            }
+        if(no_rounds < 1){
+            winnerDialog().show();
+        }
+    }
+
     void newGame(){
+        if(roomFinder!=null){
+            findWinner();
+            }
         super.newGame();
         if(myScore > 0)
           newGameDialog().show();
@@ -158,37 +202,48 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     }
 
     void createGame(){
-        if(no_rounds<=1){
+        if(roomFinder==null){
+            Log.d(" creategame", "will show match dialog ");
+            Log.d(" creategame round", String.valueOf(no_rounds));
+            Log.d(" creategame room", String.valueOf(roomFinder));
             matchingDialog();
+
         }
-        else{
+        else if(no_rounds>=1){//player who selects new game - going to
+
+            Log.d(" creategame round", String.valueOf(no_rounds));
             no_rounds--;
+            Log.d("round --", "round: " + no_rounds);
             myScore = 0;
             theirScore = 0;
             updateScores();
-            String name = "initBoardState";
+            String nameBoard = "initBoardState";
             gameBoard = new MathBoard(false);
             List<String> mathBoardList = new ArrayList<>();
             for (int i = 0; i < gameBoard.getBoard().length; i++){
                 mathBoardList.addAll(Arrays.asList(gameBoard.getBoard()[i]));
             }
 
-            databaseReference.child("rooms").child(room.getKey()).child(name).setValue(mathBoardList);
+            databaseReference.child("rooms").child(room.getKey()).child(nameBoard).setValue(mathBoardList);
+            Log.d(" creategame1 else", String.valueOf(mathBoardList));
             SetBoard(gameBoard);
             super.createGame();
         }
     }
 
     void createGame2(){
-        if(no_rounds<=1){
+        if(roomFinder==null){
+            Log.d(" creategame2", "will show matchdialog ");
             matchingDialog();
         }
-        else{
+        else if(no_rounds>=1){
+            Log.d(" creategame2 else", "else ");
             no_rounds--;
+            Log.d("round --", "round: " + no_rounds);
             myScore = 0;
             theirScore = 0;
-            updateScores();
-            this.gameBoard = new MathBoard(room.getInitBoardState());
+            updateScores();//get from db
+            this.gameBoard = new MathBoard(newBoard);
             SetBoard(this.gameBoard);
             super.createGame();
         }
@@ -260,9 +315,12 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
         updateScores();
         matchingDialog.cancel();
         super.createGame();
+
     }
 
     public void updateScores(){
+        Log.d("IMPORTANT", "updated score: " + myScore+' '+theirScore);
+
         myScoreView.setText(Integer.toString(myScore));
         theirScoreView.setText(Integer.toString(theirScore));
     }
@@ -299,8 +357,16 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
             if(key.equals("isOpen") )
                 roomFound();
 
-            if(key.equals("initBoardState"))
+            if(key.equals("initBoardState")){
+                Log.d("debugchange", "round: " + no_rounds);
+
+                newBoard = (List<String>)dataSnapshot.getValue();
+
+//                Log.d("onChildChanged", "snapshot: " + newBoard);
+                Log.d("onChildChanged", "snap value: " + dataSnapshot.getValue());
+
                 createGame2();
+            }
         }
 
         @Override
