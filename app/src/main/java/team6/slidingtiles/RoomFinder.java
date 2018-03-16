@@ -35,9 +35,11 @@ public class RoomFinder {
     Room room;
     int playerNum;
     public String id;
+    private int rounds;
 
     public RoomFinder(GameMode gameMode, String mode){
         databaseReference = FirebaseDatabase.getInstance().getReference().child("rooms");
+        rounds = mathModeMultiSimple.no_rounds;
         this.mode = mode;
         this.gameMode = gameMode;
 
@@ -47,39 +49,41 @@ public class RoomFinder {
     public void getOpenRoom(){
         Log.d("In get open room", ": ");
         Query findOpenRoom = databaseReference.
-                orderByChild("isOpen").equalTo(true).limitToFirst(1);
+                orderByChild("isOpen").equalTo(true);
         Log.d("query : ", findOpenRoom.toString());
         findOpenRoom.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Inside listener", ": going");
+                if(dataSnapshot.exists()) { //
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren() ){
+                        room = snapshot.getValue(Room.class);
+                        Log.d("round result", String.valueOf(room.getNoRounds()));
+                        if(room.getNoRounds()== rounds){
+                            flag = true;
+                            Log.d("flag true","going to find match");
+                            break;
+                        }
 
-                if(dataSnapshot.exists()) {
-                    flag = true;
-                    Log.d("room result", String.valueOf(dataSnapshot.getValue()));
-                    if(dataSnapshot.getChildren().iterator().hasNext())
-                        room = dataSnapshot.getChildren().iterator().next().getValue(Room.class);
-                    databaseReference.child(room.getKey()).child("isOpen").setValue(false);
-
-                    Log.d("room result", String.valueOf(room));
-
-                    Log.d("key value in listener", room.getKey());
-                    playerNum = 2;
-                    if (mode.equals("MathModeMultiCut")) {
-                        databaseReference.child(room.getKey()).getRef().
+                 }
+                 if(flag==false){
+                     Log.d("flag false","going to find match");
+                     createOpenRoom();
+                 } else {
+                     Log.d("key value in listener", room.getKey());
+                     playerNum = 2;
+                      
+                     databaseReference.child(room.getKey()).child("isOpen").setValue(false);
+                 
+                     if (mode.equals("MathModeMultiCut")) {
+                         databaseReference.child(room.getKey()).getRef().
                                 addChildEventListener(((MathModeMultiCut) gameMode).childEventListener);
                         ((MathModeMultiCut) gameMode).roomFound();
-                    }
-
-                    if (mode.equals("MathModeMultiSimple")) {
-                        databaseReference.child(room.getKey()).getRef().
+                     if (mode.equals("MathModeMultiSimple")) {
+                         databaseReference.child(room.getKey()).getRef().
                                 addChildEventListener(((MathModeMultiSimple) gameMode).childEventListener);
-                        ((MathModeMultiSimple) gameMode).roomFound();
-                    }
-                } else {
-                    Log.d("creating open room", ":in else part");
-                    createOpenRoom();
-                }
+                         ((MathModeMultiSimple) gameMode).roomFound();
+                     }
+                 }
             }
 
             @Override
@@ -91,7 +95,6 @@ public class RoomFinder {
     }
 
     public void createOpenRoom(){
-        Log.d("Room finder yayy", "creating open room");
         MathBoard mathBoard = new MathBoard(false);
         List<String> mathBoardList = new ArrayList<>();
         for (int i = 0; i < mathBoard.getBoard().length; i++){
@@ -100,7 +103,7 @@ public class RoomFinder {
         room  = new Room(mathBoardList);
         String key1 = databaseReference.push().getKey();
         room.setKey(key1);
-        Log.d("key print in create", room.getKey());
+        room.setNoRounds(mathModeMultiSimple.no_rounds);
         databaseReference.child(key1).setValue(room);
         if(mode.equals("MathModeMultiCut"))
             databaseReference.child(room.getKey()).getRef().
