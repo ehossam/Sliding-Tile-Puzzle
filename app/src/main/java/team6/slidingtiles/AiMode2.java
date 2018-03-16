@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.BoringLayout;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Chronometer;
@@ -18,25 +17,32 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public abstract class GameMode extends AppCompatActivity implements BoardFragment.SelectionHandler {
+public abstract class AiMode2 extends AppCompatActivity implements BoardFragment.SelectionHandler{
     ArrayList<String> boardLayout;
-    BoardFragment   boardFragment;
+    ArrayList<String> boardLayout2;
+    AiBoardFragment   boardFragment1;
+    AiBoardFragment   boardFragment2;
+
     Chronometer     timer;
     int     blankTile;
     long    timePaused;
-    Board gameBoard;
-    boolean canPause = true;
-    AiPlayer Aiplayer;
+    NumberBoard gameBoard1;
+    NumberBoard gameBoard2;
 
-    /**
-     * is called when the activity is created, sets variables and onClickListeners
-     * gets the activity ready to generate the board
-     * @param savedInstanceState the saved instance state
-     */
+
+    private static final String ARGS_GAMEBOARD      = "gameBoard";
+    private static final String ARGS_BOARDLAYOUT    = "boardLayout";
+    private static final String ARGS_BLANKTILE      = "blankTile";
+    int difficulty;
+
+
+    //AiPlayer Aiplayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_mode);
+        setContentView(R.layout.activity_ai_mode2);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,17 +60,20 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
             }
         });
 
-        boardFragment = BoardFragment.newInstance();
+        boardFragment1 = AiBoardFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentFrame, boardFragment).commit();
+                .add(R.id.fragmentFrame1, boardFragment1).commit();
+
+        boardFragment2 = AiBoardFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentFrame2, boardFragment2).commit();
+
+
     }
 
-    @Override
-    protected void onStop() {
-        getSupportFragmentManager().beginTransaction()
-                .remove(boardFragment);
-        super.onStop();
-    }
+
+
+
 
     /**
      * onResume is called when the activity becomes visible again
@@ -73,7 +82,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     @Override
     protected void onResume(){
         super.onResume();
-        if(gameBoard!=null)
+        if(gameBoard1!=null)
             resumeTimer();
     }
 
@@ -91,20 +100,16 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
      * pauses the timer
      */
     void pauseTimer(){
-        if(canPause) {
-            timePaused = timer.getBase() - SystemClock.elapsedRealtime();
-            timer.stop();
-        }
+        timePaused = timer.getBase() - SystemClock.elapsedRealtime();
+        timer.stop();
     }
 
     /**
      * resumes the timer
      */
     void resumeTimer(){
-        if(canPause) {
-            timer.setBase(SystemClock.elapsedRealtime() + timePaused);
-            timer.start();
-        }
+        timer.setBase(SystemClock.elapsedRealtime() + timePaused);
+        timer.start();
     }
 
 
@@ -137,17 +142,20 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
         for(int i = 0; i < boardLayout.size(); i++)
             if (boardLayout.get(i).compareTo(" ")==0)
                 blankTile = i;
-        boardFragment.setBoardLayout(boardLayout);
+        boardFragment1.setBoardLayout(boardLayout);
+       // boardFragment2.setBoardLayout(boardLayout);
     }
+
+
 
     /**
      * starts the timer. this must be called from child classes
      */
     void createGame(){
+
         timePaused = 0;
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
-        SetBoard(gameBoard);
     }
 
     /**
@@ -169,7 +177,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
                         newGame();
                         break;
                     case 2:
-                        endGame();
+                        finish();
                         break;
                 }
             }
@@ -184,10 +192,6 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
         return builder;
     }
 
-    void endGame(){
-        finish();
-    }
-
     /**
      * tries to swap the blank tile with the selected tile
      * @param pos the selected tile
@@ -196,14 +200,24 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     boolean moveTile(int pos){
         int x = pos % 5;
         int y = pos / 5;
-        if(gameBoard.swapTiles(x,y)) {
-            boardLayout = convertDimm(gameBoard.getBoard());
-            boardFragment.setBoardLayout(boardLayout);
+
+        if(gameBoard1.swapTiles(x,y)) {
+            boardLayout = convertDimm(gameBoard1.getBoard());
+            boardFragment1.setBoardLayout(boardLayout);
             blankTile = pos;
             return true;
         }
         return false;
     }
+
+    void reflect(){
+        boardLayout2 = convertDimm(gameBoard2.getBoard());
+        boardFragment2.setBoardLayout(boardLayout2);
+    }
+    /**
+     * checks if the board is complete, which means that the user has won
+     * prompts the user to create a new game or exit
+     */
 
     /**
      * method for the handler in BoardFragment
@@ -220,4 +234,7 @@ public abstract class GameMode extends AppCompatActivity implements BoardFragmen
     public void fragmentReady(){
         newGame();
     }
+
+
+
 }
