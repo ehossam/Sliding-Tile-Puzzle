@@ -285,9 +285,6 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
     public void updateScores(){
         myScoreView.setText("You: " + Integer.toString(myScore));
         theirScoreView.setText("Them: " + Integer.toString(theirScore));
-        if(lastUsed != null)
-            usedEquationText.setText("You played:\n"+lastUsed);
-
     }
 
     ChildEventListener childEventListener = new ChildEventListener() {
@@ -305,6 +302,9 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                     if (playerNum == 1) {
                         myScore =  dataSnapshot.getValue(Integer.class);
                         lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
+                        usedEquationText.setText("You played:\n"+lastUsed);
+                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").
+                                setValue(lastUsed);
                     } else {
                         theirScore =  dataSnapshot.getValue(Integer.class);
                     }
@@ -317,6 +317,9 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                     } else {
                         myScore = dataSnapshot.getValue(Integer.class);
                         lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
+                        usedEquationText.setText("You played:\n"+lastUsed);
+                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").
+                                setValue(lastUsed);
                     }
                     updateScores();
                     break;
@@ -332,7 +335,11 @@ public class MathModeMultiSimple extends GameMode implements RoomFinder.RoomFind
                     MathModeMultiSimple.super.createGame();
                     matchingDialog.dismiss();
                     break;
-
+                case "lastUsed":
+                    if (!lastUsed.equals(dataSnapshot.getValue(String.class))){
+                        lastUsed = dataSnapshot.getValue(String.class);
+                        usedEquationText.setText("they played:\n"+lastUsed);
+                    }
             }
         }
 

@@ -263,8 +263,11 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         Log.d("Going to get room", "roomFound: ");
 
         room = roomFinder.getRoom();
+        myScore = 0;
+        theirScore = 0;
         playerNum = roomFinder.getPlayerNum();
         this.gameBoard = new MathBoard(room.getInitBoardState());
+        lastUsed = "no equations played";
         updateScores();
     }
 
