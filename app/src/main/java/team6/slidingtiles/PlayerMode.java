@@ -108,6 +108,7 @@ public class PlayerMode extends AppCompatActivity implements View.OnClickListene
         if(view == buttonCutthroat){
             //TODO : redirect to two player cutthroat mode
             Intent intent = new Intent(PlayerMode.this,MathModeMultiCut.class);
+            intent.putExtra("rounds",no_rounds);
             startActivity(intent);
         }
 

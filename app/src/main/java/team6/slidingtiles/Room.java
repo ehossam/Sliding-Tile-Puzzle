@@ -14,7 +14,6 @@ public class Room {
     private int noRounds;
     private List<String> initBoardState;
     private List<String> winners;
-    String key;
     private String lastUsed;
     private boolean roundStarted;
     private String key;
@@ -29,7 +28,6 @@ public class Room {
         p2Score = 0;
         noRounds = 0;
   //      key = null;
-        usedEquations = new ArrayList<>();
         winners = new ArrayList<>();
         roundStarted    = false;
   //      key = null;
