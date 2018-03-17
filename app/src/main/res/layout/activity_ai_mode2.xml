@@ -37,18 +37,6 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/pause_menu" />
 
-            <android.support.v7.widget.AppCompatImageButton
-                android:id="@+id/equation_button"
-                android:layout_width="?android:attr/actionBarSize"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="11dp"
-                android:background="#000000"
-                android:padding="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/puzzle_equal" />
-
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -111,23 +99,32 @@
     <FrameLayout
         android:id="@+id/fragmentFrame1"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        app:layout_constraintBottom_toTopOf="@id/fragmentFrame2"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar">
-
     </FrameLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#000000"
+        app:layout_constraintTop_toBottomOf="@id/fragmentFrame1"
+        app:layout_constraintBottom_toTopOf="@id/fragmentFrame2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <FrameLayout
         android:id="@+id/fragmentFrame2"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/scorebar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragmentFrame1">
+        app:layout_constraintTop_toBottomOf="@id/divider">
 
     </FrameLayout>
 
