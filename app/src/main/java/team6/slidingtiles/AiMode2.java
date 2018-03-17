@@ -1,6 +1,7 @@
 package team6.slidingtiles;
 
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,13 +15,16 @@ import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
 
-public abstract class AiMode2 extends AppCompatActivity implements BoardFragment.SelectionHandler{
+public abstract class AiMode2 extends AppCompatActivity
+        implements BoardFragment.SelectionHandler, AiBoardFragment.AiSelectionHandler{
     ArrayList<String> boardLayout;
     ArrayList<String> boardLayout2;
-    AiBoardFragment   boardFragment1;
+    BoardFragment   boardFragment1;
     AiBoardFragment   boardFragment2;
 
     Chronometer     timer;
@@ -28,6 +32,8 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
     long    timePaused;
     NumberBoard gameBoard1;
     NumberBoard gameBoard2;
+    AiPlayer testPlayer = new AiPlayer();
+    AiTask aiTask;
 
 
     private static final String ARGS_GAMEBOARD      = "gameBoard";
@@ -60,15 +66,9 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
             }
         });
 
-        boardFragment1 = AiBoardFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentFrame1, boardFragment1).commit();
-
         boardFragment2 = AiBoardFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragmentFrame2, boardFragment2).commit();
-
-
     }
 
 
@@ -137,13 +137,22 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
      * updates the board currently being displayed
      * @param board the new board
      */
+    void SetAiBoard(Board board) {
+        boardLayout = convertDimm(board.getBoard());
+        for(int i = 0; i < boardLayout.size(); i++)
+            if (boardLayout.get(i).compareTo(" ")==0)
+                blankTile = i;
+        boardFragment2.setBoardLayout(boardLayout);
+       // boardFragment2.setBoardLayout(boardLayout);
+    }
+
     void SetBoard(Board board) {
         boardLayout = convertDimm(board.getBoard());
         for(int i = 0; i < boardLayout.size(); i++)
             if (boardLayout.get(i).compareTo(" ")==0)
                 blankTile = i;
         boardFragment1.setBoardLayout(boardLayout);
-       // boardFragment2.setBoardLayout(boardLayout);
+        // boardFragment2.setBoardLayout(boardLayout);
     }
 
 
@@ -152,7 +161,6 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
      * starts the timer. this must be called from child classes
      */
     void createGame(){
-
         timePaused = 0;
         timer.setBase(SystemClock.elapsedRealtime());
         timer.start();
@@ -210,10 +218,6 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
         return false;
     }
 
-    void reflect(){
-        boardLayout2 = convertDimm(gameBoard2.getBoard());
-        boardFragment2.setBoardLayout(boardLayout2);
-    }
     /**
      * checks if the board is complete, which means that the user has won
      * prompts the user to create a new game or exit
@@ -235,6 +239,63 @@ public abstract class AiMode2 extends AppCompatActivity implements BoardFragment
         newGame();
     }
 
+    public void aiFragmentReady(){
+        boardFragment1 = BoardFragment.newInstance();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentFrame1, boardFragment1).commit();
+    }
 
+    public void updateAiBoard(State.Location result){
+        gameBoard2.swapTiles(result.getX(), result.getY());
+        SetAiBoard(gameBoard2);
+        if(gameBoard2.isComplete())
+            complete_2();
+    }
+
+    static class AiTask extends AsyncTask<Void, Void, State.Location> {
+        AiPlayer aiPlayer;
+        Board board;
+        WeakReference<AiMode2> aiNumModeWeakReference;
+
+        AiTask(AiMode2 aiMode2, AiPlayer aiPlayer, Board board){
+            aiNumModeWeakReference = new WeakReference<AiMode2>(aiMode2);
+            this.aiPlayer = aiPlayer;
+            this.board = board;
+        }
+
+        @Override
+        protected State.Location doInBackground(Void... params) {
+            return aiPlayer.getNextMove();
+        }
+
+        @Override
+        protected void onPostExecute(State.Location location) {
+            if (aiNumModeWeakReference.get() != null)
+                aiNumModeWeakReference.get().updateAiBoard(location);
+        }
+    }
+
+    void complete_2(){
+        onPause();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("AI Wins!");
+        CharSequence options[] = new CharSequence[]{"New game", "Quit"};
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i){
+                    case 0:
+                        newGame();
+                        break;
+                    case 1:
+                        finish();
+                        break;
+                }
+            }
+        });
+        builder.setCancelable(false);
+        builder.show();
+    }
 
 }

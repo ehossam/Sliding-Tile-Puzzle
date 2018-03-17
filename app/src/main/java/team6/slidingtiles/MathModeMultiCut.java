@@ -18,9 +18,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Created by cheesea on 3/13/18.
@@ -46,10 +48,17 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
     int playerNum;
     String lastUsed;
     HashSet<String> usedEquations;
+    public int no_rounds;
+    List<String> newBoard = new ArrayList<>();
+    List<String> winners = new ArrayList<>();
+    String name; //username of players
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+        Intent mintent = getIntent();
+        no_rounds = mintent.getIntExtra("rounds", 1); //no of rounds passed from previous activity
         gameBoard = null;
+        Log.d("round oncreate", "round: " + no_rounds);
         canPause = false;
 
         super.onCreate(savedInstanceState);
@@ -63,6 +72,11 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         }
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        String email = user.getEmail();
+        String[] userName = email.split("@");
+        name = userName[0];
 
         myScoreView = getWindow().getDecorView().findViewById(R.id.my_score);
         //myScoreView.setText(Integer.toString(0));
@@ -137,7 +151,22 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         return adBuilder;
     }
 
-
+    AlertDialog.Builder winnerDialog() {
+        AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
+        adBuilder.setTitle("Winner ");
+        String message = "";
+        for(int i=0;i<winners.size();i++){
+            message += " Round "+ (i+1) +" : "+ winners.get(i) + "\n";
+        }
+        adBuilder.setMessage(message);
+        adBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Intent intent = new Intent(MathModeMultiCut.this,PlayerMode.class);
+                startActivity(intent);
+            }
+        });
+        return adBuilder;
+    }
 
     AlertDialog.Builder savedequtions() {
         final AlertDialog.Builder adBuilder = new AlertDialog.Builder(this);
@@ -159,6 +188,22 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         return adBuilder;
     }
 
+    void findWinner(){
+        String property = "winners";
+        if(myScore>theirScore){
+            winners.add(name);
+            databaseReference.child("rooms").child(room.getKey()).child(property).setValue(winners);
+        }
+        else if(myScore==theirScore) {
+            winners.add("Tie Occurred");
+            databaseReference.child("rooms").child(room.getKey()).child(property).setValue(winners);
+        }
+        if(no_rounds < 1){
+            winnerDialog().show();
+            databaseReference.child("rooms").child(room.getKey()).child("initBoardState").setValue(boardLayout);
+        }
+    }
+
     void newGame(){
         super.newGame();
         if(myScore > 0)
@@ -168,9 +213,34 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
     }
 
     void createGame(){
-        matchingDialog();
+        if(roomFinder==null){
+            Log.d(" creategame", "will show match dialog ");
+            Log.d(" creategame round", String.valueOf(no_rounds));
+            Log.d(" creategame room", String.valueOf(roomFinder));
+            matchingDialog();
 
+        }
+        else if(no_rounds>=1){//player who selects new game - going to
+
+            Log.d(" creategame round", String.valueOf(no_rounds));
+            Log.d("round --", "round: " + no_rounds);
+            myScore = 0;
+            theirScore = 0;
+            updateScores();
+            String nameBoard = "initBoardState";
+            gameBoard = new MathBoard(false);
+            List<String> mathBoardList = new ArrayList<>();
+            for (int i = 0; i < gameBoard.getBoard().length; i++){
+                mathBoardList.addAll(Arrays.asList(gameBoard.getBoard()[i]));
+            }
+
+            databaseReference.child("rooms").child(room.getKey()).child(nameBoard).setValue(mathBoardList);
+            Log.d(" creategame1 else", String.valueOf(mathBoardList));
+            SetBoard(gameBoard);
+        }
+        lastUsed = " ";
     }
+
 
     @Override
     public boolean handleSWipe(int start, int end) {
@@ -214,18 +284,20 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         else
             adBuilder.setTitle("You Tied");
 
-        adBuilder.setMessage("Submit Score?");
-        adBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                saveScore();
-                MathModeMultiCut.super.endGame();
-            }
-        });
-        adBuilder.setNegativeButton("no", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                MathModeMultiCut.super.endGame();
-            }
-        });
+        if(myScore > 0) {
+            adBuilder.setMessage("Submit Score?");
+            adBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    saveScore();
+                    MathModeMultiCut.super.endGame();
+                }
+            });
+            adBuilder.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    MathModeMultiCut.super.endGame();
+                }
+            });
+        } else super.endGame();
 
     }
 
@@ -252,9 +324,8 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         matchingDialog.setCancelable(false);
         matchingDialog.show();
 
-        roomFinder = new RoomFinder(this, "MathModeMultiCut");
+        roomFinder = new RoomFinder(this, "MathModeMultiCut", no_rounds);
         Log.d(" roomfinder.getopenroom", ": ");
-
         roomFinder.getOpenRoom();
     }
 
@@ -292,8 +363,9 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
                     if (playerNum == 1) {
                         myScore =  dataSnapshot.getValue(Integer.class);
                         lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
-                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").setValue(lastUsed);
-
+                        usedEquationText.setText("You played:\n"+lastUsed);
+                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").
+                                setValue(lastUsed);
                     } else {
                         theirScore =  dataSnapshot.getValue(Integer.class);
                     }
@@ -306,7 +378,9 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
                     } else {
                         myScore = dataSnapshot.getValue(Integer.class);
                         lastUsed = (String) usedEquations.toArray()[usedEquations.size() - 1];
-                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").setValue(lastUsed);
+                        usedEquationText.setText("You played:\n"+lastUsed);
+                        databaseReference.child("rooms").child(room.getKey()).child("lastUsed").
+                                setValue(lastUsed);
                     }
                     updateScores();
                     break;
@@ -324,11 +398,24 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
                     break;
 
                 case "lastUsed":
-                    if(!lastUsed.equals(dataSnapshot.getValue(String.class))) {
-                        ((MathBoard) gameBoard).
-                                insertNoScoreEquation(dataSnapshot.getValue(String.class));
-                        usedEquationText.setText("They played:\n" + dataSnapshot.getValue(String.class));
+                    if (!lastUsed.equals(dataSnapshot.getValue(String.class))){
+                        lastUsed = dataSnapshot.getValue(String.class);
+                        ((MathBoard) gameBoard).insertNoScoreEquation(lastUsed);
+                        usedEquationText.setText("they played:\n"+lastUsed);
                     }
+                    break;
+                case "initBoardState":
+                    Log.d("debugchange", "round: " + no_rounds);
+
+                    newBoard = (List<String>)dataSnapshot.getValue();
+                    gameBoard = new MathBoard(newBoard);
+
+//                 Log.d("onChildChanged", "snapshot: " + newBoard);
+                    Log.d("onChildChanged", "snap value: " + dataSnapshot.getValue());
+                    MathModeMultiCut.super.createGame();
+                    no_rounds--;
+                    findWinner();
+                    break;
             }
         }
 
