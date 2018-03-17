@@ -3,7 +3,6 @@ package team6.slidingtiles;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 

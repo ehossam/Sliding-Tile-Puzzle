@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 public class SaveScore extends AppCompatActivity implements View.OnClickListener{
 
@@ -58,9 +56,6 @@ public class SaveScore extends AppCompatActivity implements View.OnClickListener
         UserScore userScore = new UserScore(name, score);
 
         databaseReference.child(databaseReference.push().getKey()).setValue(userScore);
-
-        Toast.makeText(SaveScore.this,"Score Saved Successfully",Toast.LENGTH_SHORT).show();
-
     }
 
     @Override
