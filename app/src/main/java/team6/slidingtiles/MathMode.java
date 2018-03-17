@@ -1,19 +1,11 @@
 package team6.slidingtiles;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -166,13 +158,12 @@ public class MathMode extends GameMode  {
         int endY = end / 5;
 
 
-        Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
         if ((startX == 0 || endX == 0) && startY == endY) {
             score += ((MathBoard) gameBoard).getScore(startX, startY, false);
         } else if ((startY == 0 || endY == 0) && startX == endX) {
             score += ((MathBoard) gameBoard).getScore(startX, startY, true);
         } else return false;
-        scoreView.setText("My score: " + Integer.toString(score));
+        scoreView.setText(Integer.toString(score));
         return true;
     }
 }

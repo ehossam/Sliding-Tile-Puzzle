@@ -251,7 +251,6 @@ public class MathModeMultiCut extends GameMode implements RoomFinder.RoomFinderL
         int endY = end / 5;
 
 
-        Toast.makeText(this, "startX: "+ startX+" startY: "+startY + " endX: " + endX + " endY: " + endY , Toast.LENGTH_LONG).show();
         if ((startX == 0 || endX == 0) && startY == endY) {
             myScore += ((MathBoard) gameBoard).getScore(startX, startY, false);
         } else if ((startY == 0 || endY == 0) && startX == endX) {

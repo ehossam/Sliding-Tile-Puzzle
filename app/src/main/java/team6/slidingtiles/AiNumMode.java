@@ -1,12 +1,9 @@
 package team6.slidingtiles;
 
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 public class AiNumMode extends AiMode2 {

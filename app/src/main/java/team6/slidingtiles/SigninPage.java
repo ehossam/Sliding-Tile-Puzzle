@@ -67,7 +67,6 @@ public class SigninPage extends AppCompatActivity implements View.OnClickListene
                         //checking if success
                         progressDialog.dismiss();
                         if(task.isSuccessful()){
-                            Toast.makeText(SigninPage.this,"Logged in",Toast.LENGTH_LONG).show();
                             Intent intent = new Intent(SigninPage.this,PlayerMode.class);
                             startActivity(intent);
 

@@ -7,18 +7,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.BoringLayout;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
 
 public abstract class AiMode2 extends AppCompatActivity
         implements BoardFragment.SelectionHandler, AiBoardFragment.AiSelectionHandler{
